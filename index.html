@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+#app{position:relative;width:100%;min-height:680px;height:680px;background:#0f0f14;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:#fff;border-radius:12px}
+.scr{position:absolute;inset:0;display:none;flex-direction:column}
+.scr.on{display:flex}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#1a1a28;flex-shrink:0;border-bottom:.5px solid rgba(255,255,255,.08)}
+.bar-t{font-size:15px;font-weight:500}
+.ib{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ib:active{transform:scale(.92)}
+.btn{height:46px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+.bp{background:#4f46e5;color:#fff;flex:1}
+.bs{background:#252535;color:#ddd;flex:1}
+.bp:active,.bs:active{opacity:.85}
+
+/* HOME */
+#home{background:#0f0f14}
+.hh{padding:18px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between}
+.ht{font-size:22px;font-weight:600;letter-spacing:-.3px}
+.hsub{font-size:12px;color:#555;margin-top:2px}
+.grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;align-content:start}
+.th{aspect-ratio:.707;background:#1e1e2e;border-radius:7px;overflow:hidden;position:relative}
+.th img{width:100%;height:100%;object-fit:cover}
+.tn{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.7);border-radius:3px;padding:2px 4px;font-size:9px}
+.td{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(200,40,40,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#444}
+.eico{font-size:48px}
+.etx{font-size:15px;font-weight:500;color:#555}
+.ehint{font-size:12px;text-align:center;padding:0 40px;color:#3a3a4a}
+.fab{position:absolute;bottom:88px;right:14px;width:54px;height:54px;border-radius:50%;background:#4f46e5;border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.5);display:flex;align-items:center;justify-content:center;z-index:10}
+.fab:active{transform:scale(.93)}
+.hfoot{height:72px;background:#1a1a28;padding:12px 14px;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
+
+/* CAMERA */
+#cam{background:#000}
+#vid{width:100%;height:100%;object-fit:cover}
+.cover{position:absolute;inset:0;display:flex;flex-direction:column;pointer-events:none}
+.ctop{padding:12px 14px;background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent);display:flex;justify-content:space-between;align-items:center;pointer-events:all}
+.chip{font-size:12px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:20px}
+.cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);display:flex;justify-content:center;align-items:center;pointer-events:all}
+.shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer}
+.shut:active{transform:scale(.9)}
+
+/* DETECTION */
+#det{background:#0a0a12}
+.dw{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#dc{display:block;touch-action:none}
+.df{padding:11px 14px;background:#1a1a28;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
+
+/* FILTER */
+#fil{background:#0a0a12}
+.fp{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+#fc{display:block}
+.fo{display:flex;gap:8px;padding:10px 14px;background:#1a1a28;overflow-x:auto;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
+.fo::-webkit-scrollbar{display:none}
+.fopt{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.fopt canvas{border-radius:6px;border:2px solid #2a2a3a}
+.fopt.sel canvas{border-color:#4f46e5}
+.flbl{font-size:10px;color:#666}
+.fopt.sel .flbl{color:#4f46e5;font-weight:500}
+.ff{padding:11px 14px;background:#1a1a28;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
+
+/* MODAL */
+.ovl{position:absolute;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;z-index:50}
+.ovl.on{display:flex}
+.mc{width:100%;background:#1e1e2e;border-radius:16px 16px 0 0;padding:20px}
+.mh{font-size:16px;font-weight:500;margin-bottom:12px}
+.mi{width:100%;background:#252535;border:none;border-radius:9px;padding:12px;color:#fff;font-size:15px;margin-bottom:12px;outline:none}
+.mi:focus{outline:1.5px solid #4f46e5}
+.ma{display:flex;gap:8px}
+
+/* SPINNER */
+.spw{position:absolute;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:60;flex-direction:column;gap:12px}
+.spw.on{display:flex}
+.sp{width:40px;height:40px;border:3.5px solid rgba(255,255,255,.15);border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.slbl{font-size:13px;color:#888}
+
+/* TOAST */
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2a3a;color:#ddd;padding:8px 16px;border-radius:24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:70;white-space:nowrap}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HOME -->
+<div id="home" class="scr on">
+  <div class="hh">
+    <div>
+      <div class="ht">📄 DocScan</div>
+      <div class="hsub" id="hsub">Sin páginas</div>
+    </div>
+    <button class="ib" id="hSaveBtn" onclick="openModal()" style="display:none" title="Guardar PDF">💾</button>
+  </div>
+  <div id="grid" class="grid" style="display:none"></div>
+  <div id="emp" class="empty">
+    <div class="eico">📷</div>
+    <div class="etx">Sin páginas aún</div>
+    <div class="ehint">Toca + para fotografiar tu primer documento</div>
+  </div>
+  <button class="fab" onclick="goCamera()">+</button>
+  <div id="hfoot" class="hfoot" style="display:none">
+    <button class="btn bs" onclick="clearAll()">🗑 Limpiar</button>
+    <button class="btn bp" onclick="openModal()">💾 Guardar PDF</button>
+  </div>
+</div>
+
+<!-- CAMERA -->
+<div id="cam" class="scr">
+  <video id="vid" autoplay playsinline muted></video>
+  <div class="cover">
+    <div class="ctop">
+      <button class="ib" onclick="stopCam(true)">✕</button>
+      <div class="chip" id="pgChip">Página 1</div>
+      <div style="width:38px"></div>
+    </div>
+    <div class="cbot">
+      <button class="shut" onclick="capture()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- DETECTION -->
+<div id="det" class="scr">
+  <div class="bar">
+    <button class="ib" onclick="backDet()">←</button>
+    <span class="bar-t">Ajustar bordes</span>
+    <button class="ib" onclick="resetCorn()" title="Resetear">↺</button>
+  </div>
+  <div class="dw" id="dw">
+    <canvas id="dc"></canvas>
+  </div>
+  <div class="df">
+    <button class="btn bs" onclick="backDet()">↩ Retomar</button>
+    <button class="btn bp" onclick="confirmCrop()">Recortar ✓</button>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div id="fil" class="scr">
+  <div class="bar">
+    <button class="ib" onclick="backFil()">←</button>
+    <span class="bar-t">Seleccionar filtro</span>
+    <div style="width:38px"></div>
+  </div>
+  <div class="fp">
+    <canvas id="fc"></canvas>
+  </div>
+  <div class="fo" id="fo"></div>
+  <div class="ff">
+    <button class="btn bs" onclick="backFil()">← Atrás</button>
+    <button class="btn bp" onclick="addPage()">Agregar página ✓</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="ovl" id="modal">
+  <div class="mc">
+    <div class="mh">💾 Guardar como PDF</div>
+    <input type="text" class="mi" id="pdfName" placeholder="Nombre del documento">
+    <div class="ma">
+      <button class="btn bs" onclick="closeModal()">Cancelar</button>
+      <button class="btn bp" onclick="genPDF()">Generar y compartir 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPINNER -->
+<div class="spw" id="sp">
+  <div class="sp"></div>
+  <div class="slbl" id="splbl">Procesando…</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+</div><!-- #app -->
+
+<script>
+const S={
+  pages:[],
+  stream:null,
+  cap:null,
+  corners:null,
+  cropped:null,
+  scale:1,
+  filter:'original',
+  drag:-1
+};
+
+const FILTERS=[
+  {id:'original',lbl:'Original'},
+  {id:'bw',lbl:'Blanco/Negro'},
+  {id:'enhanced',lbl:'Mejorado'},
+  {id:'gray',lbl:'Escala gris'},
+];
+
+// ── Utils ──────────────────────────────────────────
+function show(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function toast(msg,dur=2200){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),dur);
+}
+function spin(on,lbl='Procesando…'){
+  document.getElementById('sp').classList.toggle('on',on);
+  document.getElementById('splbl').textContent=lbl;
+}
+function loadImg(src){return new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=src;})}
+function scaleDown(c,max=1500){
+  const{width:w,height:h}=c;
+  if(w<=max&&h<=max)return c;
+  const s=max/Math.max(w,h);
+  const d=document.createElement('canvas');
+  d.width=Math.round(w*s);d.height=Math.round(h*s);
+  d.getContext('2d').drawImage(c,0,0,d.width,d.height);
+  return d;
+}
+
+// ── Home ───────────────────────────────────────────
+function updateHome(){
+  const n=S.pages.length;
+  document.getElementById('hsub').textContent=n===0?'Sin páginas':`${n} página${n>1?'s':''}`;
+  document.getElementById('emp').style.display=n===0?'flex':'none';
+  document.getElementById('grid').style.display=n===0?'none':'grid';
+  document.getElementById('hfoot').style.display=n===0?'none':'flex';
+  document.getElementById('hSaveBtn').style.display=n===0?'none':'flex';
+  document.getElementById('pgChip').textContent=`Página ${n+1}`;
+
+  const g=document.getElementById('grid'); g.innerHTML='';
+  S.pages.forEach((pg,i)=>{
+    const d=document.createElement('div');
+    d.className='th';
+    d.innerHTML=`<img src="${pg.dataUrl}"><div class="tn">${i+1}</div><div class="td" onclick="delPg(${i})">✕</div>`;
+    g.appendChild(d);
+  });
+}
+function delPg(i){S.pages.splice(i,1);updateHome();}
+function clearAll(){if(!S.pages.length)return;S.pages=[];updateHome();toast('Páginas eliminadas');}
+
+// ── Camera ─────────────────────────────────────────
+async function goCamera(){
+  show('cam');
+  try{
+    S.stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false
+    });
+    document.getElementById('vid').srcObject=S.stream;
+  } catch(e){
+    show('home');
+    const inp=document.createElement('input');
+    inp.type='file';inp.accept='image/*';inp.capture='environment';
+    inp.onchange=async ev=>{
+      const f=ev.target.files[0];if(!f)return;
+      const url=URL.createObjectURL(f);
+      const img=await loadImg(url);
+      const c=document.createElement('canvas');
+      c.width=img.width;c.height=img.height;
+      c.getContext('2d').drawImage(img,0,0);
+      URL.revokeObjectURL(url);
+      processCapture(c);
+    };
+    inp.click();
+  }
+}
+function stopCam(goHome=false){
+  if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;}
+  if(goHome)show('home');
+}
+function capture(){
+  const v=document.getElementById('vid');
+  const c=document.createElement('canvas');
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  stopCam();
+  processCapture(c);
+}
+function processCapture(c){S.cap=scaleDown(c,1500);openDet();}
+function backDet(){goCamera();}
+
+// ── Detection ──────────────────────────────────────
+function openDet(){
+  show('det');
+  setTimeout(()=>{
+    const wrap=document.getElementById('dw');
+    const src=S.cap;
+    const maxW=wrap.clientWidth, maxH=wrap.clientHeight;
+    S.scale=Math.min(maxW/src.width, maxH/src.height);
+    const canvas=document.getElementById('dc');
+    canvas.width=src.width; canvas.height=src.height;
+    canvas.style.width=(src.width*S.scale)+'px';
+    canvas.style.height=(src.height*S.scale)+'px';
+    S.corners=detectCorn(src);
+    drawOvl();
+    setupDrag();
+  },80);
+}
+
+function detectCorn(src){
+  const SW=320, SH=Math.round(src.height*320/src.width);
+  const sm=document.createElement('canvas');
+  sm.width=SW;sm.height=SH;
+  sm.getContext('2d').drawImage(src,0,0,SW,SH);
+  const px=sm.getContext('2d').getImageData(0,0,SW,SH).data;
+  const gray=new Float32Array(SW*SH);
+  for(let i=0;i<SW*SH;i++)gray[i]=.299*px[i*4]+.587*px[i*4+1]+.114*px[i*4+2];
+  const bl=gaussBlur(gray,SW,SH);
+  const ed=sobel(bl,SW,SH);
+  const mx=ed.reduce((a,b)=>Math.max(a,b),0);
+  const t=mx*.14;
+  let tl=[SW,SH],tr=[0,SH],bl2=[SW,0],br=[0,0];
+  for(let y=0;y<SH;y++)for(let x=0;x<SW;x++)if(ed[y*SW+x]>t){
+    if(x+y<tl[0]+tl[1])tl=[x,y];
+    if(y-x<tr[1]-tr[0])tr=[x,y];
+    if(x-y<bl2[0]-bl2[1])bl2=[x,y];
+    if(x+y>br[0]+br[1])br=[x,y];
+  }
+  const ok=tl[0]<SW*.5&&tl[1]<SH*.5&&tr[0]>SW*.5&&tr[1]<SH*.5&&bl2[0]<SW*.5&&bl2[1]>SH*.5&&br[0]>SW*.5&&br[1]>SH*.5;
+  const rx=src.width/SW, ry=src.height/SH;
+  if(ok)return[[tl[0]*rx,tl[1]*ry],[tr[0]*rx,tr[1]*ry],[br[0]*rx,br[1]*ry],[bl2[0]*rx,bl2[1]*ry]];
+  const px2=src.width*.1, py2=src.height*.1;
+  return[[px2,py2],[src.width-px2,py2],[src.width-px2,src.height-py2],[px2,src.height-py2]];
+}
+
+function gaussBlur(g,w,h){
+  const k=[1,4,7,4,1,4,16,26,16,4,7,26,41,26,7,4,16,26,16,4,1,4,7,4,1];
+  const o=new Float32Array(w*h);
+  for(let y=2;y<h-2;y++)for(let x=2;x<w-2;x++){
+    let v=0;
+    for(let ky=-2;ky<=2;ky++)for(let kx=-2;kx<=2;kx++)v+=g[(y+ky)*w+(x+kx)]*k[(ky+2)*5+(kx+2)];
+    o[y*w+x]=v/273;
+  }
+  return o;
+}
+function sobel(g,w,h){
+  const e=new Float32Array(w*h);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const gx=-g[(y-1)*w+x-1]+g[(y-1)*w+x+1]-2*g[y*w+x-1]+2*g[y*w+x+1]-g[(y+1)*w+x-1]+g[(y+1)*w+x+1];
+    const gy=-g[(y-1)*w+x-1]-2*g[(y-1)*w+x]-g[(y-1)*w+x+1]+g[(y+1)*w+x-1]+2*g[(y+1)*w+x]+g[(y+1)*w+x+1];
+    e[y*w+x]=Math.sqrt(gx*gx+gy*gy);
+  }
+  return e;
+}
+
+function drawOvl(){
+  const canvas=document.getElementById('dc');
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(S.cap,0,0);
+  const c=S.corners;
+  ctx.strokeStyle='#4f46e5';
+  ctx.lineWidth=3/S.scale;
+  ctx.fillStyle='rgba(79,70,229,.15)';
+  ctx.beginPath();
+  ctx.moveTo(c[0][0],c[0][1]);
+  for(let i=1;i<4;i++)ctx.lineTo(c[i][0],c[i][1]);
+  ctx.closePath();
+  ctx.fill();ctx.stroke();
+  c.forEach(([x,y])=>{
+    ctx.beginPath();ctx.arc(x,y,10/S.scale,0,Math.PI*2);
+    ctx.fillStyle='#4f46e5';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2/S.scale;ctx.stroke();
+  });
+}
+
+function setupDrag(){
+  const canvas=document.getElementById('dc');
+  canvas.style.touchAction='none';
+  const pos=(e)=>{
+    const r=canvas.getBoundingClientRect();
+    const cx=e.clientX??e.touches[0].clientX;
+    const cy=e.clientY??e.touches[0].clientY;
+    return[Math.max(0,Math.min(S.cap.width,(cx-r.left)/S.scale)),
+           Math.max(0,Math.min(S.cap.height,(cy-r.top)/S.scale))];
+  };
+  canvas.onpointerdown=e=>{
+    e.preventDefault();
+    const[ix,iy]=pos(e);
+    const thr=55/S.scale;
+    let best=-1,bd=Infinity;
+    S.corners.forEach(([cx,cy],i)=>{const d=Math.hypot(cx-ix,cy-iy);if(d<bd){bd=d;best=i;}});
+    if(bd<thr){S.drag=best;canvas.setPointerCapture(e.pointerId);}
+  };
+  canvas.onpointermove=e=>{
+    if(S.drag<0)return;
+    const[ix,iy]=pos(e);
+    S.corners[S.drag]=[ix,iy];
+    drawOvl();
+  };
+  canvas.onpointerup=()=>{S.drag=-1;};
+}
+function resetCorn(){S.corners=detectCorn(S.cap);drawOvl();}
+
+// ── Perspective warp ───────────────────────────────
+function orderCorn(pts){
+  const s=[...pts].sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));
+  const tl=s[0],br=s[3],rem=[s[1],s[2]].sort((a,b)=>(a[0]-a[1])-(b[0]-b[1]));
+  return[tl,rem[1],br,rem[0]];
+}
+function perspWarp(src,pts){
+  const[tl,tr,br,bl]=pts;
+  const W=Math.round(Math.max(Math.hypot(tr[0]-tl[0],tr[1]-tl[1]),Math.hypot(br[0]-bl[0],br[1]-bl[1])));
+  const H=Math.round(Math.max(Math.hypot(bl[0]-tl[0],bl[1]-tl[1]),Math.hypot(br[0]-tr[0],br[1]-tr[1])));
+  const dst=document.createElement('canvas');
+  dst.width=W;dst.height=H;
+  const Hm=computeH([[0,0],[W,0],[W,H],[0,H]],pts);
+  const sp=src.getContext('2d').getImageData(0,0,src.width,src.height).data;
+  const dctx=dst.getContext('2d');
+  const di=dctx.createImageData(W,H);
+  const D=di.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const w2=Hm[6]*x+Hm[7]*y+1;
+    const sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2);
+    const sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
+    if(sx>=0&&sx<src.width&&sy>=0&&sy<src.height){
+      const si=(sy*src.width+sx)*4,di2=(y*W+x)*4;
+      D[di2]=sp[si];D[di2+1]=sp[si+1];D[di2+2]=sp[si+2];D[di2+3]=255;
+    }
+  }
+  dctx.putImageData(di,0,0);
+  return dst;
+}
+function computeH(src,dst){
+  const A=[],b=[];
+  for(let i=0;i<4;i++){
+    const[sx,sy]=src[i],[dx,dy]=dst[i];
+    A.push([sx,sy,1,0,0,0,-dx*sx,-dx*sy]);b.push(dx);
+    A.push([0,0,0,sx,sy,1,-dy*sx,-dy*sy]);b.push(dy);
+  }
+  return gaussElim(A,b);
+}
+function gaussElim(A,b){
+  const n=b.length,M=A.map((r,i)=>[...r,b[i]]);
+  for(let c=0;c<n;c++){
+    let mx=Math.abs(M[c][c]),mr=c;
+    for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>mx){mx=Math.abs(M[r][c]);mr=r;}
+    [M[c],M[mr]]=[M[mr],M[c]];
+    for(let r=c+1;r<n;r++){const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k];}
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n]/M[i][i];
+    for(let j=0;j<i;j++)M[j][n]-=M[j][i]*x[i];
+  }
+  return x;
+}
+
+async function confirmCrop(){
+  spin(true,'Aplicando recorte…');
+  await new Promise(r=>setTimeout(r,60));
+  S.cropped=perspWarp(S.cap,orderCorn(S.corners));
+  spin(false);
+  S.filter='original';
+  openFil();
+}
+
+// ── Filters ────────────────────────────────────────
+function applyFil(src,id){
+  const d=document.createElement('canvas');
+  d.width=src.width;d.height=src.height;
+  const ctx=d.getContext('2d');ctx.drawImage(src,0,0);
+  if(id==='original')return d;
+  const img=ctx.getImageData(0,0,d.width,d.height),px=img.data;
+  for(let i=0;i<px.length;i+=4){
+    const gr=.299*px[i]+.587*px[i+1]+.114*px[i+2];
+    let v;
+    if(id==='bw')v=gr>128?255:0;
+    else if(id==='enhanced'){v=Math.max(0,Math.min(255,(gr-80)*1.8));v=v>160?255:v<60?0:v;}
+    else v=gr;
+    px[i]=px[i+1]=px[i+2]=v;
+  }
+  ctx.putImageData(img,0,0);
+  return d;
+}
+
+function openFil(){
+  show('fil');
+  setTimeout(()=>{renderFP();renderFO();},50);
+}
+function renderFP(){
+  const canvas=document.getElementById('fc');
+  const f=applyFil(S.cropped,S.filter);
+  const wrap=canvas.parentElement;
+  const sc=Math.min(wrap.clientWidth/f.width,wrap.clientHeight/f.height);
+  canvas.width=f.width;canvas.height=f.height;
+  canvas.style.width=(f.width*sc)+'px';canvas.style.height=(f.height*sc)+'px';
+  canvas.getContext('2d').drawImage(f,0,0);
+}
+function renderFO(){
+  const c=document.getElementById('fo');c.innerHTML='';
+  FILTERS.forEach(f=>{
+    const div=document.createElement('div');
+    div.className='fopt'+(f.id===S.filter?' sel':'');
+    div.onclick=()=>{S.filter=f.id;renderFP();renderFO();};
+    const tc=document.createElement('canvas');
+    tc.width=72;tc.height=96;tc.style.cssText=`width:52px;height:70px;`;
+    tc.getContext('2d').drawImage(applyFil(S.cropped,f.id),0,0,72,96);
+    if(f.id===S.filter)tc.style.borderColor='#4f46e5';
+    const lbl=document.createElement('div');lbl.className='flbl';lbl.textContent=f.lbl;
+    div.appendChild(tc);div.appendChild(lbl);c.appendChild(div);
+  });
+}
+function backFil(){openDet();}
+function addPage(){
+  const f=applyFil(S.cropped,S.filter);
+  S.pages.push({dataUrl:f.toDataURL('image/jpeg',.88)});
+  updateHome();show('home');
+  toast('✅ Página agregada');
+}
+
+// ── PDF & Share ────────────────────────────────────
+function openModal(){
+  const d=new Date();
+  const name=`Documento_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('pdfName').value=name;
+  document.getElementById('modal').classList.add('on');
+  setTimeout(()=>document.getElementById('pdfName').select(),200);
+}
+function closeModal(){document.getElementById('modal').classList.remove('on');}
+
+async function genPDF(){
+  const name=(document.getElementById('pdfName').value.trim()||'Documento').replace(/[<>:"/\\|?*]/g,'_');
+  closeModal();spin(true,'Generando PDF…');
+  await new Promise(r=>setTimeout(r,80));
+  try{
+    const{jsPDF}=window.jspdf;
+    const imgs=await Promise.all(S.pages.map(p=>loadImg(p.dataUrl)));
+    const pdf=new jsPDF({
+      orientation:imgs[0].width>imgs[0].height?'l':'p',
+      unit:'px',format:[imgs[0].width,imgs[0].height]
+    });
+    for(let i=0;i<S.pages.length;i++){
+      if(i>0)pdf.addPage([imgs[i].width,imgs[i].height],imgs[i].width>imgs[i].height?'l':'p');
+      pdf.addImage(S.pages[i].dataUrl,'JPEG',0,0,imgs[i].width,imgs[i].height);
+    }
+    const blob=pdf.output('blob');
+    const file=new File([blob],name+'.pdf',{type:'application/pdf'});
+    spin(false);
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:name});
+    } else {
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=name+'.pdf';a.click();
+      URL.revokeObjectURL(url);
+      toast('📥 PDF descargado. Compártelo por WhatsApp manualmente.',3500);
+    }
+  } catch(e){
+    spin(false);
+    if(e.name!=='AbortError')toast('❌ Error: '+e.message,3000);
+  }
+}
+
+updateHome();
+</script>
+</body>
+</html>
