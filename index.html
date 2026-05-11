@@ -17,7 +17,6 @@
 .bp{background:#4f46e5;color:#fff;flex:1}
 .bs{background:#252535;color:#ddd;flex:1}
 .bp:active,.bs:active{opacity:.85}
-
 /* HOME */
 #home{background:#0f0f14}
 .hh{padding:18px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between}
@@ -35,26 +34,23 @@
 .fab{position:absolute;bottom:88px;right:14px;width:54px;height:54px;border-radius:50%;background:#4f46e5;border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.5);display:flex;align-items:center;justify-content:center;z-index:10}
 .fab:active{transform:scale(.93)}
 .hfoot{height:72px;background:#1a1a28;padding:12px 14px;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
-
 /* CAMERA */
 #cam{background:#000}
 #vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-#camOvl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#camOvl{position:absolute;inset:0;pointer-events:none}
 .camUI{position:absolute;inset:0;display:flex;flex-direction:column}
 .ctop{padding:12px 14px;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);display:flex;justify-content:space-between;align-items:center}
 .chip{font-size:12px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.45);padding:4px 10px;border-radius:20px}
-.cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;justify-content:center;align-items:center;gap:32px}
-.shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer;flex-shrink:0}
+.cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;justify-content:center;align-items:center}
+.shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer}
 .shut:active{transform:scale(.9)}
-.detHint{font-size:11px;color:rgba(255,255,255,.7);text-align:center;padding:0 24px;margin-bottom:-10px}
-
+.camHint{font-size:11px;color:rgba(255,255,255,.75);text-align:center;padding:6px 24px;margin-bottom:-6px}
 /* DETECTION */
 #det{background:#0a0a12}
 .dw{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #dc{display:block;touch-action:none}
-.detHintBar{text-align:center;padding:8px;font-size:12px;color:#666;background:#1a1a28;flex-shrink:0}
+.detHintBar{text-align:center;padding:7px;font-size:12px;color:#666;background:#1a1a28;flex-shrink:0}
 .df{padding:11px 14px;background:#1a1a28;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
-
 /* FILTER */
 #fil{background:#0a0a12}
 .fp{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
@@ -67,7 +63,6 @@
 .flbl{font-size:10px;color:#666}
 .fopt.sel .flbl{color:#4f46e5;font-weight:500}
 .ff{padding:11px 14px;background:#1a1a28;display:flex;gap:8px;flex-shrink:0}
-
 /* MODAL */
 .ovl{position:absolute;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;z-index:50}
 .ovl.on{display:flex}
@@ -76,14 +71,11 @@
 .mi{width:100%;background:#252535;border:none;border-radius:9px;padding:12px;color:#fff;font-size:15px;margin-bottom:12px;outline:none}
 .mi:focus{outline:1.5px solid #4f46e5}
 .ma{display:flex;gap:8px}
-
-/* SPINNER */
 .spw{position:absolute;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:60;flex-direction:column;gap:12px}
 .spw.on{display:flex}
 .sp{width:40px;height:40px;border:3.5px solid rgba(255,255,255,.15);border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .slbl{font-size:13px;color:#888}
-
 .toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2a3a;color:#ddd;padding:8px 16px;border-radius:24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:70;white-space:nowrap}
 .toast.on{opacity:1}
 </style>
@@ -94,10 +86,7 @@
 <!-- HOME -->
 <div id="home" class="scr on">
   <div class="hh">
-    <div>
-      <div class="ht">📄 DocScan</div>
-      <div class="hsub" id="hsub">Sin páginas</div>
-    </div>
+    <div><div class="ht">📄 DocScan</div><div class="hsub" id="hsub">Sin páginas</div></div>
     <button class="ib" id="hSaveBtn" onclick="openModal()" style="display:none">💾</button>
   </div>
   <div id="grid" class="grid" style="display:none"></div>
@@ -113,7 +102,7 @@
   </div>
 </div>
 
-<!-- CAMERA (detección en tiempo real) -->
+<!-- CAMERA -->
 <div id="cam" class="scr">
   <video id="vid" autoplay playsinline muted></video>
   <canvas id="camOvl"></canvas>
@@ -124,23 +113,19 @@
       <div style="width:38px"></div>
     </div>
     <div style="flex:1"></div>
-    <div class="detHint" id="detHint">Apunta al documento sobre fondo oscuro</div>
-    <div class="cbot">
-      <button class="shut" onclick="capture()"></button>
-    </div>
+    <div class="camHint" id="camHint">Apunta al documento sobre fondo oscuro</div>
+    <div class="cbot"><button class="shut" onclick="capture()"></button></div>
   </div>
 </div>
 
-<!-- DETECTION (ajuste fino) -->
+<!-- DETECTION -->
 <div id="det" class="scr">
   <div class="bar">
     <button class="ib" onclick="backDet()">←</button>
     <span class="bar-t">Ajustar bordes</span>
     <button class="ib" onclick="resetCorn()">↺</button>
   </div>
-  <div class="dw" id="dw">
-    <canvas id="dc"></canvas>
-  </div>
+  <div class="dw" id="dw"><canvas id="dc"></canvas></div>
   <div class="detHintBar">Arrastra las esquinas si es necesario</div>
   <div class="df">
     <button class="btn bs" onclick="backDet()">↩ Retomar</button>
@@ -175,29 +160,29 @@
   </div>
 </div>
 
-<!-- SPINNER -->
-<div class="spw" id="sp">
-  <div class="sp"></div>
-  <div class="slbl" id="splbl">Procesando…</div>
-</div>
+<div class="spw" id="sp"><div class="sp"></div><div class="slbl" id="splbl">Procesando…</div></div>
 <div class="toast" id="toast"></div>
-
 </div>
 
 <script>
 const S={pages:[],stream:null,cap:null,corners:null,cropped:null,scale:1,filter:'original',drag:-1};
 const FILTERS=[{id:'original',lbl:'Original'},{id:'bw',lbl:'Blanco/Negro'},{id:'enhanced',lbl:'Mejorado'},{id:'gray',lbl:'Escala gris'}];
-const SW=240; // small canvas width for real-time detection
-let detTimer=null, liveCorners=null, lastSH=0, detectionGood=false;
 
-// ── Utils ───────────────────────────────────────────
+// ── Detection state ──────────────────────────────────
+const SW=160;                 // small canvas width for detection
+let rafId=null, frameN=0;
+let liveCorners=null, detGood=false;
+let tmpC=null;                // reusable detection canvas
+let ovlW=0, ovlH=0;          // overlay canvas size (set once)
+
+// ── Utils ────────────────────────────────────────────
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
 function toast(msg,dur=2200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur);}
 function spin(on,lbl='Procesando…'){document.getElementById('sp').classList.toggle('on',on);document.getElementById('splbl').textContent=lbl;}
 function loadImg(src){return new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=src;});}
 function scaleDown(c,max=1500){const{width:w,height:h}=c;if(w<=max&&h<=max)return c;const s=max/Math.max(w,h);const d=document.createElement('canvas');d.width=Math.round(w*s);d.height=Math.round(h*s);d.getContext('2d').drawImage(c,0,0,d.width,d.height);return d;}
 
-// ── Home ────────────────────────────────────────────
+// ── Home ─────────────────────────────────────────────
 function updateHome(){
   const n=S.pages.length;
   document.getElementById('hsub').textContent=n===0?'Sin páginas':`${n} página${n>1?'s':''}`;
@@ -212,16 +197,21 @@ function updateHome(){
 function delPg(i){S.pages.splice(i,1);updateHome();}
 function clearAll(){if(!S.pages.length)return;S.pages=[];updateHome();toast('Páginas eliminadas');}
 
-// ── Camera + Live Detection ─────────────────────────
+// ── Camera ───────────────────────────────────────────
 async function goCamera(){
   show('cam');
-  liveCorners=null; detectionGood=false;
-  document.getElementById('detHint').textContent='Apunta al documento sobre fondo oscuro';
+  liveCorners=null; detGood=false; ovlW=0; ovlH=0;
+  document.getElementById('camHint').textContent='Apunta al documento sobre fondo oscuro';
   try{
     S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
     const vid=document.getElementById('vid');
     vid.srcObject=S.stream;
-    vid.onloadedmetadata=()=>startLiveDetect();
+    vid.onloadedmetadata=()=>{
+      if(!tmpC){tmpC=document.createElement('canvas');}
+      const sh=Math.round(vid.videoHeight*SW/vid.videoWidth);
+      tmpC.width=SW; tmpC.height=sh;
+      startRaf();
+    };
   }catch(e){
     show('home');
     const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
@@ -235,63 +225,61 @@ async function goCamera(){
   }
 }
 
-function startLiveDetect(){
+function startRaf(){
+  stopRaf();
   const vid=document.getElementById('vid');
   const ovl=document.getElementById('camOvl');
-  stopLiveDetect();
-  detTimer=setInterval(()=>{
-    if(!vid.videoWidth||!vid.videoHeight)return;
-    const sh=Math.round(vid.videoHeight*SW/vid.videoWidth);
-    lastSH=sh;
-    const tmp=document.createElement('canvas');tmp.width=SW;tmp.height=sh;
-    tmp.getContext('2d').drawImage(vid,0,0,SW,sh);
-    const result=detectDoc(tmp);
-    const newC=result.corners;
-    detectionGood=result.valid;
-    if(!liveCorners)liveCorners=newC;
-    else liveCorners=liveCorners.map((c,i)=>[c[0]*.65+newC[i][0]*.35,c[1]*.65+newC[i][1]*.35]);
-    // Size overlay
-    const W=ovl.offsetWidth,H=ovl.offsetHeight;
-    if(W&&H){ovl.width=W;ovl.height=H;}
-    const scX=ovl.width/SW,scY=ovl.height/sh;
-    const disp=liveCorners.map(([x,y])=>[x*scX,y*scY]);
-    drawCamOvl(disp,ovl,detectionGood);
-    document.getElementById('detHint').textContent=detectionGood?'Documento detectado — toca para capturar':'Asegúrate de que haya fondo oscuro visible';
-  },260);
+  const sh=tmpC.height;
+
+  const tick=()=>{
+    rafId=requestAnimationFrame(tick);
+    frameN++;
+
+    // ── Run detection every 4th frame (~15fps) ──
+    if(frameN%4===0&&vid.videoWidth){
+      tmpC.getContext('2d').drawImage(vid,0,0,SW,sh);
+      const r=detectDoc(tmpC);
+      detGood=r.valid;
+      const nc=r.corners;
+      liveCorners=liveCorners?liveCorners.map((c,i)=>[c[0]*.55+nc[i][0]*.45,c[1]*.55+nc[i][1]*.45]):nc;
+      document.getElementById('camHint').textContent=
+        detGood?'Documento detectado — toca para capturar':'Apunta al documento sobre fondo oscuro';
+    }
+
+    // ── Draw overlay every frame (smooth) ──
+    if(!liveCorners)return;
+    if(!ovlW){ovlW=ovl.offsetWidth||ovl.parentElement.clientWidth;ovlH=ovl.offsetHeight||ovl.parentElement.clientHeight;ovl.width=ovlW;ovl.height=ovlH;}
+    const ctx=ovl.getContext('2d');
+    ctx.clearRect(0,0,ovlW,ovlH);
+    const scX=ovlW/SW,scY=ovlH/sh;
+    const pts=liveCorners.map(([x,y])=>[x*scX,y*scY]);
+    drawQuad(ctx,pts,detGood);
+  };
+  rafId=requestAnimationFrame(tick);
 }
 
-function drawCamOvl(pts,canvas,good){
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const col=good?'rgba(79,200,120,.9)':'rgba(79,70,229,.8)';
-  const fill=good?'rgba(79,200,120,.1)':'rgba(79,70,229,.1)';
-  ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=fill;
-  ctx.setLineDash(good?[]:[8,5]);
-  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
-  pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));
-  ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
-  pts.forEach(([x,y])=>{
-    ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);
-    ctx.fillStyle=good?'#4bc87a':'#4f46e5';ctx.fill();
-    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
-  });
+function drawQuad(ctx,pts,good){
+  const col=good?'rgba(60,210,100,.95)':'rgba(100,100,255,.85)';
+  ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=good?'rgba(60,210,100,.1)':'rgba(100,100,255,.1)';
+  ctx.setLineDash(good?[]:[7,5]);
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
+  pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fillStyle=good?'#3cd264':'#6464ff';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
 }
 
-function stopLiveDetect(){clearInterval(detTimer);detTimer=null;}
+function stopRaf(){if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
+function stopCam(goHome=false){stopRaf();if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;}if(goHome)show('home');}
+function backDet(){goCamera();}
 
 function capture(){
-  stopLiveDetect();
+  stopRaf();
   const vid=document.getElementById('vid');
   const c=document.createElement('canvas');c.width=vid.videoWidth;c.height=vid.videoHeight;
   c.getContext('2d').drawImage(vid,0,0);
-  const sh=lastSH||Math.round(vid.videoHeight*SW/vid.videoWidth);
+  const sh=tmpC?tmpC.height:Math.round(vid.videoHeight*SW/vid.videoWidth);
   const pre=liveCorners?liveCorners.map(([x,y])=>[x*vid.videoWidth/SW,y*vid.videoHeight/sh]):null;
   stopCam();
   processCapture(c,pre);
 }
-
-function stopCam(goHome=false){stopLiveDetect();if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;}if(goHome)show('home');}
-function backDet(){goCamera();}
 
 function processCapture(canvas,preCorners){
   S.cap=scaleDown(canvas,1500);
@@ -300,65 +288,116 @@ function processCapture(canvas,preCorners){
   openDet();
 }
 
-// ── Detection Algorithm (Otsu threshold) ───────────
+// ── Detection: scanlines + linear regression ─────────
 function detectDoc(canvas){
   const w=canvas.width,h=canvas.height;
-  const data=canvas.getContext('2d').getImageData(0,0,w,h).data;
+  const raw=canvas.getContext('2d').getImageData(0,0,w,h).data;
+
+  // Grayscale + fast 3x3 box blur
   const gray=new Uint8Array(w*h);
-  for(let i=0;i<w*h;i++)gray[i]=(data[i*4]*77+data[i*4+1]*150+data[i*4+2]*29)>>8;
-  const t=otsu(gray,w*h);
-  let tl=[w,h],tr=[0,h],bl=[w,0],br=[0,0],cnt=0;
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(gray[y*w+x]>t){
-    cnt++;
-    if(x+y<tl[0]+tl[1])tl=[x,y];
-    if(y-x<tr[1]-tr[0])tr=[x,y];
-    if(x-y<bl[0]-bl[1])bl=[x,y];
-    if(x+y>br[0]+br[1])br=[x,y];
+  for(let i=0;i<w*h;i++)gray[i]=(raw[i*4]*77+raw[i*4+1]*150+raw[i*4+2]*29)>>8;
+  const bl=new Uint8Array(w*h);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    bl[y*w+x]=(gray[(y-1)*w+x-1]+gray[(y-1)*w+x]+gray[(y-1)*w+x+1]+
+               gray[y*w+x-1]    +gray[y*w+x]    +gray[y*w+x+1]+
+               gray[(y+1)*w+x-1]+gray[(y+1)*w+x]+gray[(y+1)*w+x+1])/9;
   }
-  const ratio=cnt/(w*h);
-  const valid=ratio>.04&&ratio<.93&&
-    tl[0]<w*.45&&tl[1]<h*.45&&
-    tr[0]>w*.55&&tr[1]<h*.45&&
-    bl[0]<w*.45&&bl[1]>h*.55&&
-    br[0]>w*.55&&br[1]>h*.55;
-  if(valid)return{corners:[tl,tr,br,bl],valid:true};
-  const mx=w*.09,my=h*.09;
-  return{corners:[[mx,my],[w-mx,my],[w-mx,h-my],[mx,h-my]],valid:false};
+
+  // Otsu threshold on blurred image
+  const t=otsu(bl,w*h);
+
+  // Scanline edge detection
+  const lPts=[],rPts=[],tPts=[],bPts=[];
+  const mg=0.06;
+  const ys=Math.round(h*mg),ye=h-ys,xs=Math.round(w*mg),xe=w-xs;
+  const minW=w*0.2,minH=h*0.2;
+
+  for(let y=ys;y<ye;y+=2){
+    let l=-1,r=-1;
+    for(let x=0;x<w;x++)if(bl[y*w+x]>t){l=x;break;}
+    for(let x=w-1;x>=0;x--)if(bl[y*w+x]>t){r=x;break;}
+    if(l>=0&&r>=0&&r-l>minW){lPts.push([l,y]);rPts.push([r,y]);}
+  }
+  for(let x=xs;x<xe;x+=2){
+    let tp=-1,bt=-1;
+    for(let y=0;y<h;y++)if(bl[y*w+x]>t){tp=y;break;}
+    for(let y=h-1;y>=0;y--)if(bl[y*w+x]>t){bt=y;break;}
+    if(tp>=0&&bt>=0&&bt-tp>minH){tPts.push([x,tp]);bPts.push([x,bt]);}
+  }
+
+  if(lPts.length<6||tPts.length<6)return{corners:def(w,h),valid:false};
+
+  // Trim outliers (remove top/bottom 10%)
+  const trim=(arr,idx)=>{arr.sort((a,b)=>a[idx]-b[idx]);const cut=Math.max(1,Math.round(arr.length*.1));return arr.slice(cut,arr.length-cut);};
+  const lT=trim(lPts,0),rT=trim(rPts,0),tT=trim(tPts,1),bT=trim(bPts,1);
+
+  // Linear regression: left/right → x=a*y+b; top/bottom → y=a*x+b
+  const lL=regXY(lT),rL=regXY(rT),tL=regYX(tT),bL=regYX(bT);
+
+  const tl=isect(lL,tL),tr=isect(rL,tL),br=isect(rL,bL),blc=isect(lL,bL);
+  if(!tl||!tr||!br||!blc)return{corners:def(w,h),valid:false};
+
+  const valid=
+    tl[0]<w*.48&&tl[1]<h*.48&&
+    tr[0]>w*.52&&tr[1]<h*.48&&
+    blc[0]<w*.48&&blc[1]>h*.52&&
+    br[0]>w*.52&&br[1]>h*.52;
+
+  return valid?{corners:[tl,tr,br,blc],valid:true}:{corners:def(w,h),valid:false};
 }
 
-function otsu(gray,n){
-  const hist=new Int32Array(256);
-  for(let i=0;i<n;i++)hist[gray[i]]++;
-  let sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];
-  let sumB=0,wB=0,max=0,t=128;
-  for(let i=0;i<256;i++){
-    wB+=hist[i];if(!wB)continue;
-    const wF=n-wB;if(!wF)break;
-    sumB+=i*hist[i];
-    const mB=sumB/wB,mF=(sum-sumB)/wF,v=wB*wF*(mB-mF)**2;
-    if(v>max){max=v;t=i;}
-  }
+// x = a*y + b  (for near-vertical lines: left/right edges)
+function regXY(pts){
+  let sy=0,sx=0,syy=0,sxy=0;const n=pts.length;
+  for(const[x,y]of pts){sy+=y;sx+=x;syy+=y*y;sxy+=x*y;}
+  const d=n*syy-sy*sy;
+  if(Math.abs(d)<1e-9)return{a:0,b:sx/n};
+  const a=(n*sxy-sx*sy)/d;return{a,b:(sx-a*sy)/n};
+}
+
+// y = a*x + b  (for near-horizontal lines: top/bottom edges)
+function regYX(pts){
+  let sx=0,sy=0,sxx=0,sxy=0;const n=pts.length;
+  for(const[x,y]of pts){sx+=x;sy+=y;sxx+=x*x;sxy+=x*y;}
+  const d=n*sxx-sx*sx;
+  if(Math.abs(d)<1e-9)return{a:0,b:sy/n};
+  const a=(n*sxy-sx*sy)/d;return{a,b:(sy-a*sx)/n};
+}
+
+// Intersection of  x=a1*y+b1  and  y=a2*x+b2
+function isect(xy,yx){
+  const d=1-xy.a*yx.a;
+  if(Math.abs(d)<1e-9)return null;
+  const x=(xy.a*yx.b+xy.b)/d,y=yx.a*x+yx.b;
+  return[x,y];
+}
+
+function otsu(g,n){
+  const h=new Int32Array(256);for(let i=0;i<n;i++)h[g[i]]++;
+  let sum=0;for(let i=0;i<256;i++)sum+=i*h[i];
+  let sb=0,wb=0,mx=0,t=128;
+  for(let i=0;i<256;i++){wb+=h[i];if(!wb)continue;const wf=n-wb;if(!wf)break;sb+=i*h[i];const mb=sb/wb,mf=(sum-sb)/wf,v=wb*wf*(mb-mf)**2;if(v>mx){mx=v;t=i;}}
   return t;
 }
 
-// ── Detection Screen ────────────────────────────────
+function def(w,h){const mx=w*.09,my=h*.09;return[[mx,my],[w-mx,my],[w-mx,h-my],[mx,h-my]];}
+
+// ── Detection screen ─────────────────────────────────
 function openDet(){
   show('det');
   setTimeout(()=>{
     const wrap=document.getElementById('dw'),src=S.cap;
-    const maxW=wrap.clientWidth,maxH=wrap.clientHeight;
-    S.scale=Math.min(maxW/src.width,maxH/src.height);
+    S.scale=Math.min(wrap.clientWidth/src.width,wrap.clientHeight/src.height);
     const canvas=document.getElementById('dc');
     canvas.width=src.width;canvas.height=src.height;
     canvas.style.width=(src.width*S.scale)+'px';canvas.style.height=(src.height*S.scale)+'px';
-    if(!S.corners)S.corners=detectDoc(src).corners;
+    if(!S.corners)S.corners=detectDoc(S.cap).corners;
     drawOvl();setupDrag();
   },80);
 }
 
 function drawOvl(){
-  const canvas=document.getElementById('dc');
-  const ctx=canvas.getContext('2d');
+  const canvas=document.getElementById('dc'),ctx=canvas.getContext('2d');
   ctx.drawImage(S.cap,0,0);
   const c=S.corners;
   ctx.strokeStyle='#4f46e5';ctx.lineWidth=3/S.scale;ctx.fillStyle='rgba(79,70,229,.15)';
@@ -375,7 +414,7 @@ function setupDrag(){
 }
 function resetCorn(){S.corners=detectDoc(S.cap).corners;drawOvl();}
 
-// ── Perspective Warp ────────────────────────────────
+// ── Perspective warp ─────────────────────────────────
 function orderCorn(pts){const s=[...pts].sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));const tl=s[0],br=s[3],rem=[s[1],s[2]].sort((a,b)=>(a[0]-a[1])-(b[0]-b[1]));return[tl,rem[1],br,rem[0]];}
 function perspWarp(src,pts){
   const[tl,tr,br,bl]=pts;
@@ -386,8 +425,7 @@ function perspWarp(src,pts){
   const sp=src.getContext('2d').getImageData(0,0,src.width,src.height).data;
   const dctx=dst.getContext('2d'),di=dctx.createImageData(W,H),D=di.data;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const w2=Hm[6]*x+Hm[7]*y+1;
-    const sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2),sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
+    const w2=Hm[6]*x+Hm[7]*y+1;const sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2),sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
     if(sx>=0&&sx<src.width&&sy>=0&&sy<src.height){const si=(sy*src.width+sx)*4,di2=(y*W+x)*4;D[di2]=sp[si];D[di2+1]=sp[si+1];D[di2+2]=sp[si+2];D[di2+3]=255;}
   }
   dctx.putImageData(di,0,0);return dst;
@@ -396,7 +434,7 @@ function computeH(src,dst){const A=[],b=[];for(let i=0;i<4;i++){const[sx,sy]=src
 function gaussElim(A,b){const n=b.length,M=A.map((r,i)=>[...r,b[i]]);for(let c=0;c<n;c++){let mx=Math.abs(M[c][c]),mr=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>mx){mx=Math.abs(M[r][c]);mr=r;}[M[c],M[mr]]=[M[mr],M[c]];for(let r=c+1;r<n;r++){const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k];}}const x=new Array(n).fill(0);for(let i=n-1;i>=0;i--){x[i]=M[i][n]/M[i][i];for(let j=0;j<i;j++)M[j][n]-=M[j][i]*x[i];}return x;}
 async function confirmCrop(){spin(true,'Aplicando recorte…');await new Promise(r=>setTimeout(r,60));S.cropped=perspWarp(S.cap,orderCorn(S.corners));spin(false);S.filter='original';openFil();}
 
-// ── Filters ─────────────────────────────────────────
+// ── Filters ───────────────────────────────────────────
 function applyFil(src,id){const d=document.createElement('canvas');d.width=src.width;d.height=src.height;const ctx=d.getContext('2d');ctx.drawImage(src,0,0);if(id==='original')return d;const img=ctx.getImageData(0,0,d.width,d.height),px=img.data;for(let i=0;i<px.length;i+=4){const gr=.299*px[i]+.587*px[i+1]+.114*px[i+2];let v;if(id==='bw')v=gr>128?255:0;else if(id==='enhanced'){v=Math.max(0,Math.min(255,(gr-80)*1.8));v=v>160?255:v<60?0:v;}else v=gr;px[i]=px[i+1]=px[i+2]=v;}ctx.putImageData(img,0,0);return d;}
 function openFil(){show('fil');setTimeout(()=>{renderFP();renderFO();},50);}
 function renderFP(){const canvas=document.getElementById('fc'),f=applyFil(S.cropped,S.filter),wrap=canvas.parentElement,sc=Math.min(wrap.clientWidth/f.width,wrap.clientHeight/f.height);canvas.width=f.width;canvas.height=f.height;canvas.style.width=(f.width*sc)+'px';canvas.style.height=(f.height*sc)+'px';canvas.getContext('2d').drawImage(f,0,0);}
@@ -404,7 +442,7 @@ function renderFO(){const c=document.getElementById('fo');c.innerHTML='';FILTERS
 function backFil(){openDet();}
 function addPage(){const f=applyFil(S.cropped,S.filter);S.pages.push({dataUrl:f.toDataURL('image/jpeg',.88)});updateHome();show('home');toast('✅ Página agregada');}
 
-// ── PDF & Share ──────────────────────────────────────
+// ── PDF & Share ───────────────────────────────────────
 function openModal(){const d=new Date(),name=`Documento_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;document.getElementById('pdfName').value=name;document.getElementById('modal').classList.add('on');setTimeout(()=>document.getElementById('pdfName').select(),200);}
 function closeModal(){document.getElementById('modal').classList.remove('on');}
 async function genPDF(){
