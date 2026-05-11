@@ -7,32 +7,24 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 #app{position:relative;width:100%;min-height:680px;height:680px;background:#0f0f14;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;color:#fff;border-radius:12px}
-.scr{position:absolute;inset:0;display:none;flex-direction:column}
-.scr.on{display:flex}
+.scr{position:absolute;inset:0;display:none;flex-direction:column}.scr.on{display:flex}
 .bar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#1a1a28;flex-shrink:0;border-bottom:.5px solid rgba(255,255,255,.08)}
 .bar-t{font-size:15px;font-weight:500}
-.ib{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.ib:active{transform:scale(.92)}
+.ib{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}.ib:active{transform:scale(.92)}
 .btn{height:46px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
-.bp{background:#4f46e5;color:#fff;flex:1}
-.bs{background:#252535;color:#ddd;flex:1}
-.bp:active,.bs:active{opacity:.85}
+.bp{background:#4f46e5;color:#fff;flex:1}.bs{background:#252535;color:#ddd;flex:1}.bp:active,.bs:active{opacity:.85}
 /* HOME */
 #home{background:#0f0f14}
 .hh{padding:18px 16px 10px;display:flex;align-items:flex-start;justify-content:space-between}
-.ht{font-size:22px;font-weight:600;letter-spacing:-.3px}
-.hsub{font-size:12px;color:#555;margin-top:2px}
+.ht{font-size:22px;font-weight:600;letter-spacing:-.3px}.hsub{font-size:12px;color:#555;margin-top:2px}
 .grid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;align-content:start}
 .th{aspect-ratio:.707;background:#1e1e2e;border-radius:7px;overflow:hidden;position:relative}
 .th img{width:100%;height:100%;object-fit:cover}
 .tn{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.7);border-radius:3px;padding:2px 4px;font-size:9px}
 .td{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(200,40,40,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#444}
-.eico{font-size:48px}
-.etx{font-size:15px;font-weight:500;color:#555}
-.ehint{font-size:12px;text-align:center;padding:0 40px;color:#3a3a4a}
-.fab{position:absolute;bottom:88px;right:14px;width:54px;height:54px;border-radius:50%;background:#4f46e5;border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.5);display:flex;align-items:center;justify-content:center;z-index:10}
-.fab:active{transform:scale(.93)}
+.eico{font-size:48px}.etx{font-size:15px;font-weight:500;color:#555}.ehint{font-size:12px;text-align:center;padding:0 40px;color:#3a3a4a}
+.fab{position:absolute;bottom:88px;right:14px;width:54px;height:54px;border-radius:50%;background:#4f46e5;border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.5);display:flex;align-items:center;justify-content:center;z-index:10}.fab:active{transform:scale(.93)}
 .hfoot{height:72px;background:#1a1a28;padding:12px 14px;display:flex;gap:8px;flex-shrink:0;border-top:.5px solid rgba(255,255,255,.08)}
 /* CAMERA */
 #cam{background:#000}
@@ -41,10 +33,9 @@
 .camUI{position:absolute;inset:0;display:flex;flex-direction:column}
 .ctop{padding:12px 14px;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);display:flex;justify-content:space-between;align-items:center}
 .chip{font-size:12px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.45);padding:4px 10px;border-radius:20px}
-.cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;justify-content:center;align-items:center}
-.shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer}
-.shut:active{transform:scale(.9)}
-.camHint{font-size:11px;color:rgba(255,255,255,.75);text-align:center;padding:6px 24px;margin-bottom:-6px}
+.cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;justify-content:center}
+.shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer}.shut:active{transform:scale(.9)}
+.camHint{font-size:11px;color:rgba(255,255,255,.8);text-align:center;padding:6px 24px;margin-bottom:-4px}
 /* DETECTION */
 #det{background:#0a0a12}
 .dw{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -55,35 +46,27 @@
 #fil{background:#0a0a12}
 .fp{flex:1;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
 #fc{display:block}
-.fo{display:flex;gap:8px;padding:10px 14px;background:#1a1a28;overflow-x:auto;flex-shrink:0}
-.fo::-webkit-scrollbar{display:none}
+.fo{display:flex;gap:8px;padding:10px 14px;background:#1a1a28;overflow-x:auto;flex-shrink:0}.fo::-webkit-scrollbar{display:none}
 .fopt{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
-.fopt canvas{border-radius:6px;border:2px solid #2a2a3a}
-.fopt.sel canvas{border-color:#4f46e5}
-.flbl{font-size:10px;color:#666}
-.fopt.sel .flbl{color:#4f46e5;font-weight:500}
+.fopt canvas{border-radius:6px;border:2px solid #2a2a3a}.fopt.sel canvas{border-color:#4f46e5}
+.flbl{font-size:10px;color:#666}.fopt.sel .flbl{color:#4f46e5;font-weight:500}
 .ff{padding:11px 14px;background:#1a1a28;display:flex;gap:8px;flex-shrink:0}
 /* MODAL */
-.ovl{position:absolute;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;z-index:50}
-.ovl.on{display:flex}
+.ovl{position:absolute;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;z-index:50}.ovl.on{display:flex}
 .mc{width:100%;background:#1e1e2e;border-radius:16px 16px 0 0;padding:20px}
 .mh{font-size:16px;font-weight:500;margin-bottom:12px}
-.mi{width:100%;background:#252535;border:none;border-radius:9px;padding:12px;color:#fff;font-size:15px;margin-bottom:12px;outline:none}
-.mi:focus{outline:1.5px solid #4f46e5}
+.mi{width:100%;background:#252535;border:none;border-radius:9px;padding:12px;color:#fff;font-size:15px;margin-bottom:12px;outline:none}.mi:focus{outline:1.5px solid #4f46e5}
 .ma{display:flex;gap:8px}
-.spw{position:absolute;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:60;flex-direction:column;gap:12px}
-.spw.on{display:flex}
+.spw{position:absolute;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:60;flex-direction:column;gap:12px}.spw.on{display:flex}
 .sp{width:40px;height:40px;border:3.5px solid rgba(255,255,255,.15);border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .slbl{font-size:13px;color:#888}
-.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2a3a;color:#ddd;padding:8px 16px;border-radius:24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:70;white-space:nowrap}
-.toast.on{opacity:1}
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2a3a;color:#ddd;padding:8px 16px;border-radius:24px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:70;white-space:nowrap}.toast.on{opacity:1}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="scr on">
   <div class="hh">
     <div><div class="ht">📄 DocScan</div><div class="hsub" id="hsub">Sin páginas</div></div>
@@ -91,8 +74,7 @@
   </div>
   <div id="grid" class="grid" style="display:none"></div>
   <div id="emp" class="empty">
-    <div class="eico">📷</div>
-    <div class="etx">Sin páginas aún</div>
+    <div class="eico">📷</div><div class="etx">Sin páginas aún</div>
     <div class="ehint">Toca + para fotografiar tu primer documento</div>
   </div>
   <button class="fab" onclick="goCamera()">+</button>
@@ -102,7 +84,6 @@
   </div>
 </div>
 
-<!-- CAMERA -->
 <div id="cam" class="scr">
   <video id="vid" autoplay playsinline muted></video>
   <canvas id="camOvl"></canvas>
@@ -118,7 +99,6 @@
   </div>
 </div>
 
-<!-- DETECTION -->
 <div id="det" class="scr">
   <div class="bar">
     <button class="ib" onclick="backDet()">←</button>
@@ -133,7 +113,6 @@
   </div>
 </div>
 
-<!-- FILTER -->
 <div id="fil" class="scr">
   <div class="bar">
     <button class="ib" onclick="backFil()">←</button>
@@ -148,7 +127,6 @@
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="ovl" id="modal">
   <div class="mc">
     <div class="mh">💾 Guardar como PDF</div>
@@ -168,12 +146,14 @@
 const S={pages:[],stream:null,cap:null,corners:null,cropped:null,scale:1,filter:'original',drag:-1};
 const FILTERS=[{id:'original',lbl:'Original'},{id:'bw',lbl:'Blanco/Negro'},{id:'enhanced',lbl:'Mejorado'},{id:'gray',lbl:'Escala gris'}];
 
-// ── Detection state ──────────────────────────────────
-const SW=160;                 // small canvas width for detection
-let rafId=null, frameN=0;
-let liveCorners=null, detGood=false;
-let tmpC=null;                // reusable detection canvas
-let ovlW=0, ovlH=0;          // overlay canvas size (set once)
+// ── Detection config ─────────────────────────────────
+const SW=120;          // small canvas width (faster)
+const DT=100;          // ms between detections
+let rafId=null, lastDet=0;
+let liveC=null, targetC=null, detGood=false;
+let tmpC=null, tmpSH=0;
+let _gray=null,_blr=null,_pbw=0,_pbh=0; // persistent pixel buffers
+let ovlW=0,ovlH=0;
 
 // ── Utils ────────────────────────────────────────────
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
@@ -199,18 +179,18 @@ function clearAll(){if(!S.pages.length)return;S.pages=[];updateHome();toast('Pá
 
 // ── Camera ───────────────────────────────────────────
 async function goCamera(){
-  show('cam');
-  liveCorners=null; detGood=false; ovlW=0; ovlH=0;
+  show('cam'); liveC=null; targetC=null; detGood=false; ovlW=0; ovlH=0;
   document.getElementById('camHint').textContent='Apunta al documento sobre fondo oscuro';
   try{
     S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
     const vid=document.getElementById('vid');
     vid.srcObject=S.stream;
     vid.onloadedmetadata=()=>{
-      if(!tmpC){tmpC=document.createElement('canvas');}
-      const sh=Math.round(vid.videoHeight*SW/vid.videoWidth);
-      tmpC.width=SW; tmpC.height=sh;
-      startRaf();
+      if(!tmpC)tmpC=document.createElement('canvas');
+      tmpC.width=SW;
+      tmpSH=Math.round(vid.videoHeight*SW/vid.videoWidth);
+      tmpC.height=tmpSH;
+      startRaf(vid);
     };
   }catch(e){
     show('home');
@@ -225,45 +205,54 @@ async function goCamera(){
   }
 }
 
-function startRaf(){
+function startRaf(vid){
   stopRaf();
-  const vid=document.getElementById('vid');
   const ovl=document.getElementById('camOvl');
-  const sh=tmpC.height;
+  const ctx=ovl.getContext('2d');
 
   const tick=()=>{
     rafId=requestAnimationFrame(tick);
-    frameN++;
+    const now=performance.now();
 
-    // ── Run detection every 4th frame (~15fps) ──
-    if(frameN%4===0&&vid.videoWidth){
-      tmpC.getContext('2d').drawImage(vid,0,0,SW,sh);
+    // ── Detection: every DT ms (time-based, not frame-based) ──
+    if(now-lastDet>=DT&&vid.videoWidth){
+      lastDet=now;
+      tmpC.getContext('2d').drawImage(vid,0,0,SW,tmpSH);
       const r=detectDoc(tmpC);
       detGood=r.valid;
-      const nc=r.corners;
-      liveCorners=liveCorners?liveCorners.map((c,i)=>[c[0]*.55+nc[i][0]*.45,c[1]*.55+nc[i][1]*.45]):nc;
+      targetC=r.corners;
       document.getElementById('camHint').textContent=
         detGood?'Documento detectado — toca para capturar':'Apunta al documento sobre fondo oscuro';
     }
 
-    // ── Draw overlay every frame (smooth) ──
-    if(!liveCorners)return;
-    if(!ovlW){ovlW=ovl.offsetWidth||ovl.parentElement.clientWidth;ovlH=ovl.offsetHeight||ovl.parentElement.clientHeight;ovl.width=ovlW;ovl.height=ovlH;}
-    const ctx=ovl.getContext('2d');
+    // ── Smooth lerp every frame (60fps animation) ──
+    if(targetC){
+      liveC=liveC
+        ?liveC.map((c,i)=>[c[0]*.75+targetC[i][0]*.25,c[1]*.75+targetC[i][1]*.25])
+        :targetC.map(c=>[...c]);
+    }
+    if(!liveC)return;
+
+    // ── Draw overlay ──
+    if(!ovlW){
+      ovlW=ovl.offsetWidth||380; ovlH=ovl.offsetHeight||560;
+      ovl.width=ovlW; ovl.height=ovlH;
+    }
+    const scX=ovlW/SW, scY=ovlH/tmpSH;
+    const pts=liveC.map(([x,y])=>[x*scX,y*scY]);
     ctx.clearRect(0,0,ovlW,ovlH);
-    const scX=ovlW/SW,scY=ovlH/sh;
-    const pts=liveCorners.map(([x,y])=>[x*scX,y*scY]);
-    drawQuad(ctx,pts,detGood);
+    const col=detGood?'rgba(50,210,90,.95)':'rgba(110,110,255,.8)';
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.fillStyle=detGood?'rgba(50,210,90,.1)':'rgba(110,110,255,.1)';
+    ctx.setLineDash(detGood?[]:[7,5]);
+    ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
+    pts.forEach(([x,y])=>{
+      ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.fillStyle=detGood?'#32d25a':'#6e6eff';ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    });
   };
   rafId=requestAnimationFrame(tick);
-}
-
-function drawQuad(ctx,pts,good){
-  const col=good?'rgba(60,210,100,.95)':'rgba(100,100,255,.85)';
-  ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=good?'rgba(60,210,100,.1)':'rgba(100,100,255,.1)';
-  ctx.setLineDash(good?[]:[7,5]);
-  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
-  pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fillStyle=good?'#3cd264':'#6464ff';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
 }
 
 function stopRaf(){if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
@@ -275,111 +264,121 @@ function capture(){
   const vid=document.getElementById('vid');
   const c=document.createElement('canvas');c.width=vid.videoWidth;c.height=vid.videoHeight;
   c.getContext('2d').drawImage(vid,0,0);
-  const sh=tmpC?tmpC.height:Math.round(vid.videoHeight*SW/vid.videoWidth);
-  const pre=liveCorners?liveCorners.map(([x,y])=>[x*vid.videoWidth/SW,y*vid.videoHeight/sh]):null;
+  const pre=liveC?liveC.map(([x,y])=>[x*vid.videoWidth/SW,y*vid.videoHeight/tmpSH]):null;
   stopCam();
   processCapture(c,pre);
 }
-
-function processCapture(canvas,preCorners){
+function processCapture(canvas,pre){
   S.cap=scaleDown(canvas,1500);
-  if(preCorners){const sx=S.cap.width/canvas.width,sy=S.cap.height/canvas.height;S.corners=preCorners.map(([x,y])=>[x*sx,y*sy]);}
+  if(pre){const sx=S.cap.width/canvas.width,sy=S.cap.height/canvas.height;S.corners=pre.map(([x,y])=>[x*sx,y*sy]);}
   else S.corners=null;
   openDet();
 }
 
-// ── Detection: scanlines + linear regression ─────────
+// ── Document detection: scanlines + IQR + regression ─
 function detectDoc(canvas){
-  const w=canvas.width,h=canvas.height;
+  const w=canvas.width,h=canvas.height,n=w*h;
   const raw=canvas.getContext('2d').getImageData(0,0,w,h).data;
 
-  // Grayscale + fast 3x3 box blur
-  const gray=new Uint8Array(w*h);
-  for(let i=0;i<w*h;i++)gray[i]=(raw[i*4]*77+raw[i*4+1]*150+raw[i*4+2]*29)>>8;
-  const bl=new Uint8Array(w*h);
+  // Persistent pixel buffers (avoid GC pressure)
+  if(w!==_pbw||h!==_pbh){_gray=new Uint8Array(n);_blr=new Uint8Array(n);_pbw=w;_pbh=h;}
+
+  // Grayscale
+  for(let i=0;i<n;i++)_gray[i]=(raw[i*4]*77+raw[i*4+1]*150+raw[i*4+2]*29)>>8;
+
+  // Fast 3×3 box blur (reduces noise before threshold)
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    bl[y*w+x]=(gray[(y-1)*w+x-1]+gray[(y-1)*w+x]+gray[(y-1)*w+x+1]+
-               gray[y*w+x-1]    +gray[y*w+x]    +gray[y*w+x+1]+
-               gray[(y+1)*w+x-1]+gray[(y+1)*w+x]+gray[(y+1)*w+x+1])/9;
+    _blr[y*w+x]=(_gray[(y-1)*w+x-1]+_gray[(y-1)*w+x]+_gray[(y-1)*w+x+1]+
+                 _gray[y*w+x-1]+_gray[y*w+x]+_gray[y*w+x+1]+
+                 _gray[(y+1)*w+x-1]+_gray[(y+1)*w+x]+_gray[(y+1)*w+x+1])/9;
   }
 
-  // Otsu threshold on blurred image
-  const t=otsu(bl,w*h);
+  const t=otsu(_blr,n);
 
-  // Scanline edge detection
-  const lPts=[],rPts=[],tPts=[],bPts=[];
-  const mg=0.06;
+  // Scanlines — sample every 3rd row/col
+  const lP=[],rP=[],tP=[],bP=[];
+  const mg=0.05,step=3;
   const ys=Math.round(h*mg),ye=h-ys,xs=Math.round(w*mg),xe=w-xs;
-  const minW=w*0.2,minH=h*0.2;
+  const minW=w*.12,minH=h*.12;
 
-  for(let y=ys;y<ye;y+=2){
+  for(let y=ys;y<ye;y+=step){
     let l=-1,r=-1;
-    for(let x=0;x<w;x++)if(bl[y*w+x]>t){l=x;break;}
-    for(let x=w-1;x>=0;x--)if(bl[y*w+x]>t){r=x;break;}
-    if(l>=0&&r>=0&&r-l>minW){lPts.push([l,y]);rPts.push([r,y]);}
+    for(let x=0;x<w;x++)if(_blr[y*w+x]>t){l=x;break;}
+    for(let x=w-1;x>=0;x--)if(_blr[y*w+x]>t){r=x;break;}
+    if(l>=0&&r>=0&&r-l>minW){lP.push([l,y]);rP.push([r,y]);}
   }
-  for(let x=xs;x<xe;x+=2){
+  for(let x=xs;x<xe;x+=step){
     let tp=-1,bt=-1;
-    for(let y=0;y<h;y++)if(bl[y*w+x]>t){tp=y;break;}
-    for(let y=h-1;y>=0;y--)if(bl[y*w+x]>t){bt=y;break;}
-    if(tp>=0&&bt>=0&&bt-tp>minH){tPts.push([x,tp]);bPts.push([x,bt]);}
+    for(let y=0;y<h;y++)if(_blr[y*w+x]>t){tp=y;break;}
+    for(let y=h-1;y>=0;y--)if(_blr[y*w+x]>t){bt=y;break;}
+    if(tp>=0&&bt>=0&&bt-tp>minH){tP.push([x,tp]);bP.push([x,bt]);}
   }
 
-  if(lPts.length<6||tPts.length<6)return{corners:def(w,h),valid:false};
+  if(lP.length<6||tP.length<6)return{corners:def(w,h),valid:false};
 
-  // Trim outliers (remove top/bottom 10%)
-  const trim=(arr,idx)=>{arr.sort((a,b)=>a[idx]-b[idx]);const cut=Math.max(1,Math.round(arr.length*.1));return arr.slice(cut,arr.length-cut);};
-  const lT=trim(lPts,0),rT=trim(rPts,0),tT=trim(tPts,1),bT=trim(bPts,1);
+  // IQR outlier removal — reject anomalous edge positions
+  const iqr=(pts,idx)=>{
+    const v=pts.map(p=>p[idx]).sort((a,b)=>a-b);
+    const q1=v[Math.floor(v.length*.25)],q3=v[Math.floor(v.length*.75)],fence=(q3-q1)*1.5;
+    return pts.filter(p=>p[idx]>=q1-fence&&p[idx]<=q3+fence);
+  };
+  const lF=iqr(lP,0),rF=iqr(rP,0),tF=iqr(tP,1),bF=iqr(bP,1);
+  if(lF.length<5||tF.length<5)return{corners:def(w,h),valid:false};
 
-  // Linear regression: left/right → x=a*y+b; top/bottom → y=a*x+b
-  const lL=regXY(lT),rL=regXY(rT),tL=regYX(tT),bL=regYX(bT);
+  // Linear regression for each edge line
+  const lL=regXY(lF),rL=regXY(rF),tL=regYX(tF),bL=regYX(bF);
 
+  // Intersect lines to get corners
   const tl=isect(lL,tL),tr=isect(rL,tL),br=isect(rL,bL),blc=isect(lL,bL);
   if(!tl||!tr||!br||!blc)return{corners:def(w,h),valid:false};
 
-  const valid=
-    tl[0]<w*.48&&tl[1]<h*.48&&
-    tr[0]>w*.52&&tr[1]<h*.48&&
-    blc[0]<w*.48&&blc[1]>h*.52&&
-    br[0]>w*.52&&br[1]>h*.52;
+  // ── Validation 1: each corner in its expected quadrant ──
+  const posOk=
+    tl[0]<w*.5&&tl[1]<h*.5&&
+    tr[0]>w*.5&&tr[1]<h*.5&&
+    blc[0]<w*.5&&blc[1]>h*.5&&
+    br[0]>w*.5&&br[1]>h*.5;
 
+  // ── Validation 2: aspect ratio resembles a real document ──
+  const dW=Math.hypot(tr[0]-tl[0],tr[1]-tl[1]);
+  const dH=Math.hypot(blc[0]-tl[0],blc[1]-tl[1]);
+  const ar=dW/(dH||1);
+  const arOk=ar>0.25&&ar<4.0;
+
+  // ── Validation 3: quad must cover enough of the frame ──
+  const area=Math.abs((tl[0]*(tr[1]-blc[1])+tr[0]*(br[1]-tl[1])+br[0]*(blc[1]-tr[1])+blc[0]*(tl[1]-br[1]))/2);
+  const areaOk=area>w*h*0.07;
+
+  const valid=posOk&&arOk&&areaOk;
   return valid?{corners:[tl,tr,br,blc],valid:true}:{corners:def(w,h),valid:false};
 }
 
-// x = a*y + b  (for near-vertical lines: left/right edges)
+// x = a·y + b  (left/right near-vertical edges)
 function regXY(pts){
   let sy=0,sx=0,syy=0,sxy=0;const n=pts.length;
   for(const[x,y]of pts){sy+=y;sx+=x;syy+=y*y;sxy+=x*y;}
-  const d=n*syy-sy*sy;
-  if(Math.abs(d)<1e-9)return{a:0,b:sx/n};
+  const d=n*syy-sy*sy;if(Math.abs(d)<1e-9)return{a:0,b:sx/n};
   const a=(n*sxy-sx*sy)/d;return{a,b:(sx-a*sy)/n};
 }
-
-// y = a*x + b  (for near-horizontal lines: top/bottom edges)
+// y = a·x + b  (top/bottom near-horizontal edges)
 function regYX(pts){
   let sx=0,sy=0,sxx=0,sxy=0;const n=pts.length;
   for(const[x,y]of pts){sx+=x;sy+=y;sxx+=x*x;sxy+=x*y;}
-  const d=n*sxx-sx*sx;
-  if(Math.abs(d)<1e-9)return{a:0,b:sy/n};
+  const d=n*sxx-sx*sx;if(Math.abs(d)<1e-9)return{a:0,b:sy/n};
   const a=(n*sxy-sx*sy)/d;return{a,b:(sy-a*sx)/n};
 }
-
-// Intersection of  x=a1*y+b1  and  y=a2*x+b2
+// Intersection of x=a1·y+b1 and y=a2·x+b2
 function isect(xy,yx){
-  const d=1-xy.a*yx.a;
-  if(Math.abs(d)<1e-9)return null;
-  const x=(xy.a*yx.b+xy.b)/d,y=yx.a*x+yx.b;
-  return[x,y];
+  const d=1-xy.a*yx.a;if(Math.abs(d)<1e-9)return null;
+  const x=(xy.a*yx.b+xy.b)/d,y=yx.a*x+yx.b;return[x,y];
 }
-
 function otsu(g,n){
   const h=new Int32Array(256);for(let i=0;i<n;i++)h[g[i]]++;
-  let sum=0;for(let i=0;i<256;i++)sum+=i*h[i];
+  let s=0;for(let i=0;i<256;i++)s+=i*h[i];
   let sb=0,wb=0,mx=0,t=128;
-  for(let i=0;i<256;i++){wb+=h[i];if(!wb)continue;const wf=n-wb;if(!wf)break;sb+=i*h[i];const mb=sb/wb,mf=(sum-sb)/wf,v=wb*wf*(mb-mf)**2;if(v>mx){mx=v;t=i;}}
+  for(let i=0;i<256;i++){wb+=h[i];if(!wb)continue;const wf=n-wb;if(!wf)break;sb+=i*h[i];const mb=sb/wb,mf=(s-sb)/wf,v=wb*wf*(mb-mf)**2;if(v>mx){mx=v;t=i;}}
   return t;
 }
-
 function def(w,h){const mx=w*.09,my=h*.09;return[[mx,my],[w-mx,my],[w-mx,h-my],[mx,h-my]];}
 
 // ── Detection screen ─────────────────────────────────
@@ -395,7 +394,6 @@ function openDet(){
     drawOvl();setupDrag();
   },80);
 }
-
 function drawOvl(){
   const canvas=document.getElementById('dc'),ctx=canvas.getContext('2d');
   ctx.drawImage(S.cap,0,0);
@@ -404,7 +402,6 @@ function drawOvl(){
   ctx.beginPath();ctx.moveTo(c[0][0],c[0][1]);for(let i=1;i<4;i++)ctx.lineTo(c[i][0],c[i][1]);ctx.closePath();ctx.fill();ctx.stroke();
   c.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,10/S.scale,0,Math.PI*2);ctx.fillStyle='#4f46e5';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2/S.scale;ctx.stroke();});
 }
-
 function setupDrag(){
   const canvas=document.getElementById('dc');canvas.style.touchAction='none';
   const pos=e=>{const r=canvas.getBoundingClientRect();return[Math.max(0,Math.min(S.cap.width,(e.clientX-r.left)/S.scale)),Math.max(0,Math.min(S.cap.height,(e.clientY-r.top)/S.scale))];};
@@ -425,7 +422,7 @@ function perspWarp(src,pts){
   const sp=src.getContext('2d').getImageData(0,0,src.width,src.height).data;
   const dctx=dst.getContext('2d'),di=dctx.createImageData(W,H),D=di.data;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const w2=Hm[6]*x+Hm[7]*y+1;const sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2),sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
+    const w2=Hm[6]*x+Hm[7]*y+1,sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2),sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
     if(sx>=0&&sx<src.width&&sy>=0&&sy<src.height){const si=(sy*src.width+sx)*4,di2=(y*W+x)*4;D[di2]=sp[si];D[di2+1]=sp[si+1];D[di2+2]=sp[si+2];D[di2+3]=255;}
   }
   dctx.putImageData(di,0,0);return dst;
