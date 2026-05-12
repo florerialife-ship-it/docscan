@@ -141,13 +141,13 @@ const S={pages:[],stream:null,cap:null,corners:null,cropped:null,scale:1,filter:
 const FILTERS=[{id:'original',lbl:'Original'},{id:'bw',lbl:'B/N'},{id:'enhanced',lbl:'Mejorado'},{id:'gray',lbl:'Gris'}];
 
 // ── Detection buffers (allocated once, reused) ───────
-const SW=128, DT=120; // canvas width, ms between detections
+const SW=192, DT=130; // canvas width, ms between detections
 let rafId=null, lastDet=0;
 let liveC=null, targetC=null, detGood=false;
 let tmpC=null, tmpSH=0;
 let ovlW=0, ovlH=0;
 // Pixel buffers — reallocated only when canvas size changes
-let _pbw=0,_pbh=0,_gray=null,_blr=null,_bin=null,_vis=null,_que=null;
+let _pbw=0,_pbh=0,_gray=null,_blr=null,_bin=null,_ero=null,_vis=null,_que=null;
 
 // ── Utils ─────────────────────────────────────────────
 const $=id=>document.getElementById(id);
@@ -273,7 +273,7 @@ function detectDoc(canvas){
   // Allocate persistent buffers once
   if(w!==_pbw||h!==_pbh){
     _gray=new Uint8Array(n);_blr=new Uint8Array(n);
-    _bin=new Uint8Array(n);_vis=new Uint8Array(n);
+    _bin=new Uint8Array(n);_ero=new Uint8Array(n);_vis=new Uint8Array(n);
     _que=new Int32Array(n);
     _pbw=w;_pbh=h;
   }
@@ -292,25 +292,30 @@ function detectDoc(canvas){
   const t=otsu(_blr,n);
   for(let i=0;i<n;i++)_bin[i]=_blr[i]>t?1:0;
 
-  // 4. BFS pass 1: find the LARGEST connected bright component
+  // 3b. Morphological erosion (3×3) — breaks thin noise bridges & removes specks
+  _ero.fill(0);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=y*w+x;
+    if(_bin[i]&&_bin[i-1]&&_bin[i+1]&&_bin[i-w]&&_bin[i+w])_ero[i]=1;
+  }
+
+  // 4. BFS pass 1: find LARGEST connected component in ERODED image
   _vis.fill(0);
   let bestStart=-1,bestSize=0;
   for(let s=0;s<n;s++){
-    if(!_bin[s]||_vis[s])continue;
+    if(!_ero[s]||_vis[s])continue;
     let qh=0,qt=0,sz=1;
     _que[qt++]=s;_vis[s]=1;
     while(qh<qt){
       const i=_que[qh++],x=i%w,y=(i/w)|0;
-      if(x>0&&_bin[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;sz++;}
-      if(x<w-1&&_bin[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;sz++;}
-      if(y>0&&_bin[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;sz++;}
-      if(y<h-1&&_bin[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;sz++;}
+      if(x>0&&_ero[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;sz++;}
+      if(x<w-1&&_ero[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;sz++;}
+      if(y>0&&_ero[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;sz++;}
+      if(y<h-1&&_ero[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;sz++;}
     }
     if(sz>bestSize){bestSize=sz;bestStart=s;}
   }
-
-  // Reject if largest region is too small (< 7% of frame) or too big (> 96%)
-  if(bestSize<n*.07||bestSize>n*.96)return{corners:def(w,h),valid:false};
+  if(bestSize<n*.05||bestSize>n*.96)return{corners:def(w,h),valid:false};
 
   // 5. BFS pass 2: mark ONLY the largest component
   _vis.fill(0);
@@ -318,11 +323,21 @@ function detectDoc(canvas){
   _que[qt++]=bestStart;_vis[bestStart]=1;
   while(qh<qt){
     const i=_que[qh++],x=i%w,y=(i/w)|0;
-    if(x>0&&_bin[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;}
-    if(x<w-1&&_bin[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;}
-    if(y>0&&_bin[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;}
-    if(y<h-1&&_bin[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;}
+    if(x>0&&_ero[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;}
+    if(x<w-1&&_ero[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;}
+    if(y>0&&_ero[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;}
+    if(y<h-1&&_ero[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;}
   }}
+
+  // 5b. Conditional dilation — restore paper edges within original binary mask
+  // (does NOT recover bridges to noise since those were eliminated in erosion)
+  for(let pass=0;pass<2;pass++){
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+      const i=y*w+x;
+      if(!_vis[i]&&_bin[i]&&(_vis[i-1]===1||_vis[i+1]===1||_vis[i-w]===1||_vis[i+w]===1))_vis[i]=2;
+    }
+    for(let i=0;i<n;i++)if(_vis[i]===2)_vis[i]=1;
+  }
 
   // 6. Scanlines on LARGEST COMPONENT ONLY → clean edge points
   const lP=[],rP=[],tP=[],bP=[];
