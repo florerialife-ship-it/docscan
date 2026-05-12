@@ -227,8 +227,13 @@ function startRaf(vid){
 
     // ── Draw overlay ──
     if(!ovlW){ovlW=ovl.offsetWidth||380;ovlH=ovl.offsetHeight||560;ovl.width=ovlW;ovl.height=ovlH;}
-    const scX=ovlW/SW,scY=ovlH/tmpSH;
-    const pts=liveC.map(([x,y])=>[x*scX,y*scY]);
+    // object-fit: cover compensation — match video's visible region exactly
+    const vidW=vid.videoWidth,vidH=vid.videoHeight;
+    const sCov=Math.max(ovlW/vidW,ovlH/vidH);
+    const dispW=vidW*sCov,dispH=vidH*sCov;
+    const offX=(ovlW-dispW)/2,offY=(ovlH-dispH)/2;
+    const scX=dispW/SW,scY=dispH/tmpSH;
+    const pts=liveC.map(([x,y])=>[x*scX+offX,y*scY+offY]);
     ctx.clearRect(0,0,ovlW,ovlH);
     const col=detGood?'rgba(40,210,80,.95)':'rgba(130,130,255,.75)';
     ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=detGood?'rgba(40,210,80,.1)':'rgba(130,130,255,.08)';
@@ -252,7 +257,7 @@ function capture(){
   stopCam();processCapture(c,pre);
 }
 function processCapture(canvas,pre){
-  S.cap=scaleDown(canvas,1500);
+  S.cap=scaleDown(canvas,2600);
   if(pre){const sx=S.cap.width/canvas.width,sy=S.cap.height/canvas.height;S.corners=pre.map(([x,y])=>[x*sx,y*sy]);}
   else S.corners=null;
   openDet();
@@ -400,8 +405,20 @@ function perspWarp(src,pts){
   const sp=src.getContext('2d').getImageData(0,0,src.width,src.height).data;
   const dctx=dst.getContext('2d'),di=dctx.createImageData(W,H),D=di.data;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const w2=Hm[6]*x+Hm[7]*y+1,sx=Math.round((Hm[0]*x+Hm[1]*y+Hm[2])/w2),sy=Math.round((Hm[3]*x+Hm[4]*y+Hm[5])/w2);
-    if(sx>=0&&sx<src.width&&sy>=0&&sy<src.height){const si=(sy*src.width+sx)*4,di2=(y*W+x)*4;D[di2]=sp[si];D[di2+1]=sp[si+1];D[di2+2]=sp[si+2];D[di2+3]=255;}
+    const w2=Hm[6]*x+Hm[7]*y+1;
+    const sxF=(Hm[0]*x+Hm[1]*y+Hm[2])/w2;
+    const syF=(Hm[3]*x+Hm[4]*y+Hm[5])/w2;
+    const x0=Math.floor(sxF),y0=Math.floor(syF);
+    if(x0>=0&&x0<src.width-1&&y0>=0&&y0<src.height-1){
+      const dxF=sxF-x0,dyF=syF-y0;
+      const w00=(1-dxF)*(1-dyF),w10=dxF*(1-dyF),w01=(1-dxF)*dyF,w11=dxF*dyF;
+      const i00=(y0*src.width+x0)*4,i10=i00+4,i01=i00+src.width*4,i11=i01+4;
+      const di2=(y*W+x)*4;
+      D[di2]=sp[i00]*w00+sp[i10]*w10+sp[i01]*w01+sp[i11]*w11;
+      D[di2+1]=sp[i00+1]*w00+sp[i10+1]*w10+sp[i01+1]*w01+sp[i11+1]*w11;
+      D[di2+2]=sp[i00+2]*w00+sp[i10+2]*w10+sp[i01+2]*w01+sp[i11+2]*w11;
+      D[di2+3]=255;
+    }
   }
   dctx.putImageData(di,0,0);return dst;
 }
@@ -415,7 +432,7 @@ function openFil(){show('fil');setTimeout(()=>{renderFP();renderFO();},50);}
 function renderFP(){const canvas=$('fc'),f=applyFil(S.cropped,S.filter),wrap=canvas.parentElement,sc=Math.min(wrap.clientWidth/f.width,wrap.clientHeight/f.height);canvas.width=f.width;canvas.height=f.height;canvas.style.width=(f.width*sc)+'px';canvas.style.height=(f.height*sc)+'px';canvas.getContext('2d').drawImage(f,0,0);}
 function renderFO(){const c=$('fo');c.innerHTML='';FILTERS.forEach(f=>{const div=document.createElement('div');div.className='fopt'+(f.id===S.filter?' sel':'');div.onclick=()=>{S.filter=f.id;renderFP();renderFO();};const tc=document.createElement('canvas');tc.width=72;tc.height=96;tc.style.cssText='width:52px;height:70px;';if(f.id===S.filter)tc.style.borderColor='#4f46e5';tc.getContext('2d').drawImage(applyFil(S.cropped,f.id),0,0,72,96);const lbl=document.createElement('div');lbl.className='flbl';lbl.textContent=f.lbl;div.appendChild(tc);div.appendChild(lbl);c.appendChild(div);});}
 function backFil(){openDet();}
-function addPage(){const f=applyFil(S.cropped,S.filter);S.pages.push({dataUrl:f.toDataURL('image/jpeg',.88)});updateHome();show('home');toast('✅ Página agregada');}
+function addPage(){const f=applyFil(S.cropped,S.filter);S.pages.push({dataUrl:f.toDataURL('image/jpeg',.95)});updateHome();show('home');toast('✅ Página agregada');}
 
 // ── PDF ───────────────────────────────────────────────
 function openModal(){const d=new Date(),name=`Documento_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;$('pdfName').value=name;$('modal').classList.add('on');setTimeout(()=>$('pdfName').select(),200);}
