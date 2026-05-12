@@ -33,7 +33,7 @@
 .chip{font-size:12px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.45);padding:4px 10px;border-radius:20px}
 .cbot{margin-top:auto;padding:22px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;justify-content:center}
 .shut{width:66px;height:66px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);cursor:pointer}.shut:active{transform:scale(.9)}
-.camHint{font-size:11px;color:rgba(255,255,255,.8);text-align:center;padding:6px 24px;margin-bottom:-4px}
+.camHint{font-size:11px;color:rgba(255,255,255,.85);text-align:center;padding:6px 24px;margin-bottom:-4px}
 #det{background:#0a0a12}
 .dw{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #dc{display:block;touch-action:none}
@@ -140,24 +140,21 @@
 const S={pages:[],stream:null,cap:null,corners:null,cropped:null,scale:1,filter:'original',drag:-1};
 const FILTERS=[{id:'original',lbl:'Original'},{id:'bw',lbl:'B/N'},{id:'enhanced',lbl:'Mejorado'},{id:'gray',lbl:'Gris'}];
 
-// ── Detection buffers (allocated once, reused) ───────
-const SW=192, DT=130; // canvas width, ms between detections
+// ── Detection config ──
+const SW=200, DT=130;
 let rafId=null, lastDet=0;
 let liveC=null, targetC=null, detGood=false;
 let tmpC=null, tmpSH=0;
 let ovlW=0, ovlH=0;
-// Pixel buffers — reallocated only when canvas size changes
-let _pbw=0,_pbh=0,_gray=null,_blr=null,_bin=null,_ero=null,_vis=null,_que=null;
+let _pbw=0,_pbh=0,_gray=null,_blr=null,_bin=null,_vis=null,_que=null;
 
-// ── Utils ─────────────────────────────────────────────
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
 function toast(msg,dur=2200){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),dur);}
 function spin(on,lbl='Procesando…'){$('sp').classList.toggle('on',on);$('splbl').textContent=lbl;}
 function loadImg(src){return new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=src;});}
-function scaleDown(c,max=1500){const{width:w,height:h}=c;if(w<=max&&h<=max)return c;const s=max/Math.max(w,h);const d=document.createElement('canvas');d.width=Math.round(w*s);d.height=Math.round(h*s);d.getContext('2d').drawImage(c,0,0,d.width,d.height);return d;}
+function scaleDown(c,max=2600){const{width:w,height:h}=c;if(w<=max&&h<=max)return c;const s=max/Math.max(w,h);const d=document.createElement('canvas');d.width=Math.round(w*s);d.height=Math.round(h*s);d.getContext('2d').drawImage(c,0,0,d.width,d.height);return d;}
 
-// ── Home ──────────────────────────────────────────────
 function updateHome(){
   const n=S.pages.length;
   $('hsub').textContent=n===0?'Sin páginas':`${n} página${n>1?'s':''}`;
@@ -172,7 +169,6 @@ function updateHome(){
 function delPg(i){S.pages.splice(i,1);updateHome();}
 function clearAll(){if(!S.pages.length)return;S.pages=[];updateHome();toast('Páginas eliminadas');}
 
-// ── Camera ────────────────────────────────────────────
 async function goCamera(){
   show('cam');liveC=null;targetC=null;detGood=false;ovlW=0;ovlH=0;
   $('camHint').textContent='Centra el documento en la pantalla';
@@ -199,6 +195,12 @@ async function goCamera(){
   }
 }
 
+function ensureOvlSize(ovl){
+  if(ovlW&&ovlH)return;
+  const w=ovl.offsetWidth,h=ovl.offsetHeight;
+  if(w>0&&h>0){ovlW=w;ovlH=h;ovl.width=w;ovl.height=h;}
+}
+
 function startRaf(vid){
   stopRaf();
   const ovl=$('camOvl');
@@ -207,7 +209,6 @@ function startRaf(vid){
     rafId=requestAnimationFrame(tick);
     const now=performance.now();
 
-    // ── Detection every DT ms ──
     if(now-lastDet>=DT&&vid.videoWidth){
       lastDet=now;
       tmpC.getContext('2d').drawImage(vid,0,0,SW,tmpSH);
@@ -217,29 +218,31 @@ function startRaf(vid){
       $('camHint').textContent=detGood?'Documento detectado — toca para capturar':'Centra el documento en la pantalla';
     }
 
-    // ── Smooth lerp every frame ──
     if(targetC){
       liveC=liveC
-        ?liveC.map((c,i)=>[c[0]*.72+targetC[i][0]*.28,c[1]*.72+targetC[i][1]*.28])
+        ?liveC.map((c,i)=>[c[0]*.65+targetC[i][0]*.35,c[1]*.65+targetC[i][1]*.35])
         :targetC.map(c=>[...c]);
     }
     if(!liveC)return;
 
-    // ── Draw overlay ──
-    if(!ovlW){ovlW=ovl.offsetWidth||380;ovlH=ovl.offsetHeight||560;ovl.width=ovlW;ovl.height=ovlH;}
-    // object-fit: cover compensation — match video's visible region exactly
+    ensureOvlSize(ovl);
+    if(!ovlW)return;
+
+    // object-fit: cover compensation
     const vidW=vid.videoWidth,vidH=vid.videoHeight;
+    if(!vidW)return;
     const sCov=Math.max(ovlW/vidW,ovlH/vidH);
     const dispW=vidW*sCov,dispH=vidH*sCov;
     const offX=(ovlW-dispW)/2,offY=(ovlH-dispH)/2;
     const scX=dispW/SW,scY=dispH/tmpSH;
     const pts=liveC.map(([x,y])=>[x*scX+offX,y*scY+offY]);
+
     ctx.clearRect(0,0,ovlW,ovlH);
-    const col=detGood?'rgba(40,210,80,.95)':'rgba(130,130,255,.75)';
-    ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=detGood?'rgba(40,210,80,.1)':'rgba(130,130,255,.08)';
+    const col=detGood?'rgba(45,210,85,.95)':'rgba(120,120,255,.78)';
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.fillStyle=detGood?'rgba(45,210,85,.1)':'rgba(120,120,255,.08)';
     ctx.setLineDash(detGood?[]:[8,6]);
     ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fill();ctx.stroke();ctx.setLineDash([]);
-    const dotCol=detGood?'#28d250':'#8888ff';
+    const dotCol=detGood?'#2dd255':'#7a7aff';
     pts.forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fillStyle=dotCol;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
   };
   rafId=requestAnimationFrame(tick);
@@ -253,7 +256,8 @@ function capture(){
   const vid=$('vid');
   const c=document.createElement('canvas');c.width=vid.videoWidth;c.height=vid.videoHeight;
   c.getContext('2d').drawImage(vid,0,0);
-  const pre=liveC?liveC.map(([x,y])=>[x*vid.videoWidth/SW,y*vid.videoHeight/tmpSH]):null;
+  // Only carry pre-corners if live detection was actually valid
+  const pre=(liveC&&detGood)?liveC.map(([x,y])=>[x*vid.videoWidth/SW,y*vid.videoHeight/tmpSH]):null;
   stopCam();processCapture(c,pre);
 }
 function processCapture(canvas,pre){
@@ -264,16 +268,23 @@ function processCapture(canvas,pre){
 }
 
 // ══════════════════════════════════════════════════════
-// DETECTION — Largest Connected Bright Region (BFS)
+// DETECTION — robust pipeline
+//  1. Grayscale + blur
+//  2. Otsu threshold with leniency factor (handles paper shadows)
+//  3. BFS to find largest connected bright component
+//  4. Per-row/col scanlines on that component
+//  5. IQR outlier rejection on edge points
+//  6. Linear regression for each of 4 edges
+//  7. Corners = intersections
+//  8. Validate aspect/area/quadrant
 // ══════════════════════════════════════════════════════
 function detectDoc(canvas){
   const w=canvas.width,h=canvas.height,n=w*h;
   const raw=canvas.getContext('2d').getImageData(0,0,w,h).data;
 
-  // Allocate persistent buffers once
   if(w!==_pbw||h!==_pbh){
     _gray=new Uint8Array(n);_blr=new Uint8Array(n);
-    _bin=new Uint8Array(n);_ero=new Uint8Array(n);_vis=new Uint8Array(n);
+    _bin=new Uint8Array(n);_vis=new Uint8Array(n);
     _que=new Int32Array(n);
     _pbw=w;_pbh=h;
   }
@@ -281,105 +292,109 @@ function detectDoc(canvas){
   // 1. Grayscale
   for(let i=0;i<n;i++)_gray[i]=(raw[i*4]*77+raw[i*4+1]*150+raw[i*4+2]*29)>>8;
 
-  // 2. 3×3 box blur (noise reduction)
-  _blr.set(_gray);
+  // 2. 3×3 box blur
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++)
     _blr[y*w+x]=(_gray[(y-1)*w+x-1]+_gray[(y-1)*w+x]+_gray[(y-1)*w+x+1]+
                  _gray[y*w+x-1]+_gray[y*w+x]+_gray[y*w+x+1]+
                  _gray[(y+1)*w+x-1]+_gray[(y+1)*w+x]+_gray[(y+1)*w+x+1])/9;
 
-  // 3. Otsu threshold → binary
-  const t=otsu(_blr,n);
+  // 3. Otsu, but lower threshold by 15% so shadowed paper edges stay included
+  const tOtsu=otsu(_blr,n);
+  const t=Math.max(60,tOtsu*0.82);
   for(let i=0;i<n;i++)_bin[i]=_blr[i]>t?1:0;
 
-  // 3b. Morphological erosion (3×3) — breaks thin noise bridges & removes specks
-  _ero.fill(0);
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x;
-    if(_bin[i]&&_bin[i-1]&&_bin[i+1]&&_bin[i-w]&&_bin[i+w])_ero[i]=1;
-  }
-
-  // 4. BFS pass 1: find LARGEST connected component in ERODED image
+  // 4. BFS — find largest 4-connected bright component
   _vis.fill(0);
   let bestStart=-1,bestSize=0;
   for(let s=0;s<n;s++){
-    if(!_ero[s]||_vis[s])continue;
+    if(!_bin[s]||_vis[s])continue;
     let qh=0,qt=0,sz=1;
     _que[qt++]=s;_vis[s]=1;
     while(qh<qt){
       const i=_que[qh++],x=i%w,y=(i/w)|0;
-      if(x>0&&_ero[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;sz++;}
-      if(x<w-1&&_ero[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;sz++;}
-      if(y>0&&_ero[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;sz++;}
-      if(y<h-1&&_ero[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;sz++;}
+      if(x>0&&_bin[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;sz++;}
+      if(x<w-1&&_bin[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;sz++;}
+      if(y>0&&_bin[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;sz++;}
+      if(y<h-1&&_bin[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;sz++;}
     }
     if(sz>bestSize){bestSize=sz;bestStart=s;}
   }
-  if(bestSize<n*.05||bestSize>n*.96)return{corners:def(w,h),valid:false};
+  if(bestSize<n*.06||bestSize>n*.97)return{corners:def(w,h),valid:false};
 
-  // 5. BFS pass 2: mark ONLY the largest component
+  // 5. Mark only the largest component
   _vis.fill(0);
   {let qh=0,qt=0;
   _que[qt++]=bestStart;_vis[bestStart]=1;
   while(qh<qt){
     const i=_que[qh++],x=i%w,y=(i/w)|0;
-    if(x>0&&_ero[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;}
-    if(x<w-1&&_ero[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;}
-    if(y>0&&_ero[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;}
-    if(y<h-1&&_ero[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;}
+    if(x>0&&_bin[i-1]&&!_vis[i-1]){_vis[i-1]=1;_que[qt++]=i-1;}
+    if(x<w-1&&_bin[i+1]&&!_vis[i+1]){_vis[i+1]=1;_que[qt++]=i+1;}
+    if(y>0&&_bin[i-w]&&!_vis[i-w]){_vis[i-w]=1;_que[qt++]=i-w;}
+    if(y<h-1&&_bin[i+w]&&!_vis[i+w]){_vis[i+w]=1;_que[qt++]=i+w;}
   }}
 
-  // 5b. Conditional dilation — restore paper edges within original binary mask
-  // (does NOT recover bridges to noise since those were eliminated in erosion)
-  for(let pass=0;pass<2;pass++){
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-      const i=y*w+x;
-      if(!_vis[i]&&_bin[i]&&(_vis[i-1]===1||_vis[i+1]===1||_vis[i-w]===1||_vis[i+w]===1))_vis[i]=2;
-    }
-    for(let i=0;i<n;i++)if(_vis[i]===2)_vis[i]=1;
-  }
-
-  // 6. Scanlines on LARGEST COMPONENT ONLY → clean edge points
+  // 6. Scanlines on largest component
   const lP=[],rP=[],tP=[],bP=[];
   for(let y=0;y<h;y++){
     let l=-1,r=-1;
     for(let x=0;x<w;x++)if(_vis[y*w+x]){l=x;break;}
     for(let x=w-1;x>=0;x--)if(_vis[y*w+x]){r=x;break;}
-    if(l>=0&&r-l>w*.08){lP.push([l,y]);rP.push([r,y]);}
+    if(l>=0&&r-l>w*.05){lP.push([l,y]);rP.push([r,y]);}
   }
   for(let x=0;x<w;x++){
     let tp=-1,bt=-1;
     for(let y=0;y<h;y++)if(_vis[y*w+x]){tp=y;break;}
     for(let y=h-1;y>=0;y--)if(_vis[y*w+x]){bt=y;break;}
-    if(tp>=0&&bt-tp>h*.08){tP.push([x,tp]);bP.push([x,bt]);}
+    if(tp>=0&&bt-tp>h*.05){tP.push([x,tp]);bP.push([x,bt]);}
   }
-  if(lP.length<5||tP.length<5)return{corners:def(w,h),valid:false};
+  if(lP.length<8||tP.length<8)return{corners:def(w,h),valid:false};
 
-  // 7. Linear regression for each edge
-  const lL=regXY(lP),rL=regXY(rP),tL=regYX(tP),bL=regYX(bP);
+  // 7. IQR-based outlier rejection — critical for handling shadows / partial occlusion
+  // For each edge, the perpendicular coordinate should be roughly constant (after sorting).
+  // Remove points outside 1.5×IQR.
+  const iqr=(pts,idx)=>{
+    const v=pts.map(p=>p[idx]).slice().sort((a,b)=>a-b);
+    const n=v.length;
+    const q1=v[(n*.25)|0],q3=v[(n*.75)|0],iv=(q3-q1)*1.5;
+    const lo=q1-iv,hi=q3+iv;
+    return pts.filter(p=>p[idx]>=lo&&p[idx]<=hi);
+  };
+  // left/right edges: x coordinate is the relevant one
+  // top/bottom edges: y coordinate is the relevant one
+  const lF=iqr(lP,0),rF=iqr(rP,0),tF=iqr(tP,1),bF=iqr(bP,1);
+  if(lF.length<6||tF.length<6)return{corners:def(w,h),valid:false};
+
+  // 8. Linear regression for each edge
+  const lL=regXY(lF),rL=regXY(rF),tL=regYX(tF),bL=regYX(bF);
+
+  // 9. Compute corners via line intersections
   const tl=isect(lL,tL),tr=isect(rL,tL),br=isect(rL,bL),blc=isect(lL,bL);
   if(!tl||!tr||!br||!blc)return{corners:def(w,h),valid:false};
 
-  // 8. Validate shape is document-like
+  // 10. Validate quad shape
   const dW=Math.hypot(tr[0]-tl[0],tr[1]-tl[1]);
   const dH=Math.hypot(blc[0]-tl[0],blc[1]-tl[1]);
   const ar=dW/(dH||1);
   const area=Math.abs((tl[0]*(tr[1]-blc[1])+tr[0]*(br[1]-tl[1])+br[0]*(blc[1]-tr[1])+blc[0]*(tl[1]-br[1]))/2);
-  if(ar<0.15||ar>6||area<n*.05)return{corners:def(w,h),valid:false};
+
+  // Position check — each corner in correct quadrant
+  const posOk=
+    tl[0]<w*.55&&tl[1]<h*.55&&
+    tr[0]>w*.45&&tr[1]<h*.55&&
+    blc[0]<w*.55&&blc[1]>h*.45&&
+    br[0]>w*.45&&br[1]>h*.45;
+
+  if(!posOk||ar<0.2||ar>5||area<n*.06)return{corners:def(w,h),valid:false};
 
   return{corners:[tl,tr,br,blc],valid:true};
 }
 
-// x = a·y + b
 function regXY(pts){let sy=0,sx=0,syy=0,sxy=0;const n=pts.length;for(const[x,y]of pts){sy+=y;sx+=x;syy+=y*y;sxy+=x*y;}const d=n*syy-sy*sy;if(Math.abs(d)<1e-9)return{a:0,b:sx/n};const a=(n*sxy-sx*sy)/d;return{a,b:(sx-a*sy)/n};}
-// y = a·x + b
 function regYX(pts){let sx=0,sy=0,sxx=0,sxy=0;const n=pts.length;for(const[x,y]of pts){sx+=x;sy+=y;sxx+=x*x;sxy+=x*y;}const d=n*sxx-sx*sx;if(Math.abs(d)<1e-9)return{a:0,b:sy/n};const a=(n*sxy-sx*sy)/d;return{a,b:(sy-a*sx)/n};}
-// Intersect x=a1·y+b1 and y=a2·x+b2
 function isect(xy,yx){const d=1-xy.a*yx.a;if(Math.abs(d)<1e-9)return null;const x=(xy.a*yx.b+xy.b)/d;return[x,yx.a*x+yx.b];}
 function otsu(g,n){const h=new Int32Array(256);for(let i=0;i<n;i++)h[g[i]]++;let s=0;for(let i=0;i<256;i++)s+=i*h[i];let sb=0,wb=0,mx=0,t=128;for(let i=0;i<256;i++){wb+=h[i];if(!wb)continue;const wf=n-wb;if(!wf)break;sb+=i*h[i];const mb=sb/wb,mf=(s-sb)/wf,v=wb*wf*(mb-mf)**2;if(v>mx){mx=v;t=i;}}return t;}
 function def(w,h){const mx=w*.09,my=h*.09;return[[mx,my],[w-mx,my],[w-mx,h-my],[mx,h-my]];}
 
-// ── Detection screen ──────────────────────────────────
 function openDet(){
   show('det');
   setTimeout(()=>{
@@ -409,7 +424,6 @@ function setupDrag(){
 }
 function resetCorn(){S.corners=detectDoc(S.cap).corners;drawOvl();}
 
-// ── Perspective warp ──────────────────────────────────
 function orderCorn(pts){const s=[...pts].sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));const tl=s[0],br=s[3],rem=[s[1],s[2]].sort((a,b)=>(a[0]-a[1])-(b[0]-b[1]));return[tl,rem[1],br,rem[0]];}
 function perspWarp(src,pts){
   const[tl,tr,br,bl]=pts;
@@ -441,7 +455,6 @@ function computeH(src,dst){const A=[],b=[];for(let i=0;i<4;i++){const[sx,sy]=src
 function gElim(A,b){const n=b.length,M=A.map((r,i)=>[...r,b[i]]);for(let c=0;c<n;c++){let mx=Math.abs(M[c][c]),mr=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>mx){mx=Math.abs(M[r][c]);mr=r;}[M[c],M[mr]]=[M[mr],M[c]];for(let r=c+1;r<n;r++){const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k];}}const x=new Array(n).fill(0);for(let i=n-1;i>=0;i--){x[i]=M[i][n]/M[i][i];for(let j=0;j<i;j++)M[j][n]-=M[j][i]*x[i];}return x;}
 async function confirmCrop(){spin(true,'Aplicando recorte…');await new Promise(r=>setTimeout(r,60));S.cropped=perspWarp(S.cap,orderCorn(S.corners));spin(false);S.filter='original';openFil();}
 
-// ── Filters ───────────────────────────────────────────
 function applyFil(src,id){const d=document.createElement('canvas');d.width=src.width;d.height=src.height;const ctx=d.getContext('2d');ctx.drawImage(src,0,0);if(id==='original')return d;const img=ctx.getImageData(0,0,d.width,d.height),px=img.data;for(let i=0;i<px.length;i+=4){const gr=.299*px[i]+.587*px[i+1]+.114*px[i+2];let v;if(id==='bw')v=gr>128?255:0;else if(id==='enhanced'){v=Math.max(0,Math.min(255,(gr-80)*1.8));v=v>160?255:v<60?0:v;}else v=gr;px[i]=px[i+1]=px[i+2]=v;}ctx.putImageData(img,0,0);return d;}
 function openFil(){show('fil');setTimeout(()=>{renderFP();renderFO();},50);}
 function renderFP(){const canvas=$('fc'),f=applyFil(S.cropped,S.filter),wrap=canvas.parentElement,sc=Math.min(wrap.clientWidth/f.width,wrap.clientHeight/f.height);canvas.width=f.width;canvas.height=f.height;canvas.style.width=(f.width*sc)+'px';canvas.style.height=(f.height*sc)+'px';canvas.getContext('2d').drawImage(f,0,0);}
@@ -449,7 +462,6 @@ function renderFO(){const c=$('fo');c.innerHTML='';FILTERS.forEach(f=>{const div
 function backFil(){openDet();}
 function addPage(){const f=applyFil(S.cropped,S.filter);S.pages.push({dataUrl:f.toDataURL('image/jpeg',.95)});updateHome();show('home');toast('✅ Página agregada');}
 
-// ── PDF ───────────────────────────────────────────────
 function openModal(){const d=new Date(),name=`Documento_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;$('pdfName').value=name;$('modal').classList.add('on');setTimeout(()=>$('pdfName').select(),200);}
 function closeModal(){$('modal').classList.remove('on');}
 async function genPDF(){
